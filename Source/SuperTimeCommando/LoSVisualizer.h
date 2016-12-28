@@ -14,6 +14,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	class USphereComponent* Sphere;
 
+	UPROPERTY(VisibleAnywhere)
+	class UProceduralMeshComponent* ProceduralMesh;
+
 public:
 	// The field of view
 	UPROPERTY(EditAnywhere, Category="Sight", meta = (ClampMin = 0, ClampMax = 180, DisplayName = "Field of View"))

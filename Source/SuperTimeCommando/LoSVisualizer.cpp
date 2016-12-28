@@ -2,6 +2,7 @@
 
 #include "SuperTimeCommando.h"
 #include "LoSVisualizer.h"
+#include "ProceduralMeshComponent.h"
 #include "LoSObstacle.h"
 #include "Util.h"
 
@@ -11,6 +12,8 @@ ALoSVisualizer::ALoSVisualizer()
 {
 	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	Sphere->InitSphereRadius(MaxDistance);
+
+	ProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("ProceduralMesh"));
 
 	RootComponent = Sphere;
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -65,6 +68,31 @@ void ALoSVisualizer::Tick(float DeltaTime)
 	{
 		UE_LOG(LogActor, Warning, TEXT("U: %f A: %f F: %s V: %s"), FUtil::Angle2D(Forward2D, V), FUtil::SignedAngle2D(Forward2D, V), *Forward2D.ToString(), *V.ToString());
 	}
+
+	TArray<FVector> Vertices;
+
+	Vertices.Add(GetActorLocation() + FVector(0, 0, 0));
+	Vertices.Add(GetActorLocation() + FVector(0, 100, 0));
+	Vertices.Add(GetActorLocation() + FVector(100, 0, 0));
+
+	TArray<int32> Triangles;
+	Triangles.Add(0);
+	Triangles.Add(1);
+	Triangles.Add(2);
+
+	TArray<FVector> Normals;
+	Normals.Init(FVector(0.f, 0.f, 1.f), Vertices.Num());
+
+	TArray<FVector2D> UV0;
+	UV0.Init(FVector2D(0.f, 0.f), Vertices.Num());
+
+	TArray<FColor> VertexColors;
+	VertexColors.Init(FColor(255, 0, 0), Vertices.Num());
+
+	TArray<FProcMeshTangent> Tangents;
+	Tangents.Init(FProcMeshTangent(), Vertices.Num());
+
+	ProceduralMesh->CreateMeshSection(0, Vertices, Triangles, Normals, UV0, VertexColors, Tangents, false);
 }
 
 #if WITH_EDITOR
