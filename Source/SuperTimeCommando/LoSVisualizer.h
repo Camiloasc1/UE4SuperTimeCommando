@@ -41,6 +41,11 @@ public:
 #endif
 
 protected:
+	//  Calculate the corners for the sight cone
+	virtual void CalculateCorners();
+	// Generate the sight cone mesh
+	virtual void UpdateProceduralMesh();
+	// Set the sphere radius as MaxDistance
 	virtual void UpdateSphereRadius();
 };
 
