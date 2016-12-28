@@ -16,7 +16,7 @@ public:
 
 public:
 	// The field of view
-	UPROPERTY(EditAnywhere, Category="Sight", meta = (ClampMin = 0, ClampMax = 360, DisplayName = "Field of View"))
+	UPROPERTY(EditAnywhere, Category="Sight", meta = (ClampMin = 0, ClampMax = 180, DisplayName = "Field of View"))
 	float FoV;
 
 	// The maximum sight distance

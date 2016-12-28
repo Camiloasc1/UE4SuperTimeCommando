@@ -36,10 +36,6 @@ void ALoSObstacle::UpdateCorners()
 	FVector Orgin;
 	FVector BoxExtent;
 	GetActorBounds(false, Orgin, BoxExtent);
-	/*FString CoordinateString = FString::Printf(TEXT("Character Position is %s"), *Orgin.ToCompactString());
-	UE_LOG(LogActor, Warning, TEXT("%s"), *CoordinateString);
-	CoordinateString = FString::Printf(TEXT("Bounds Extent is %s"), *BoxExtent.ToCompactString());
-	UE_LOG(LogActor, Warning, TEXT("%s"), *CoordinateString);*/
 	Corners.Empty();
 	Corners.Add(FVector2D(Orgin.X + BoxExtent.X, Orgin.Y + BoxExtent.Y));
 	Corners.Add(FVector2D(Orgin.X + BoxExtent.X, Orgin.Y - BoxExtent.Y));

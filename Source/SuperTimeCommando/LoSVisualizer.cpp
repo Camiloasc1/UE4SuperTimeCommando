@@ -3,6 +3,7 @@
 #include "SuperTimeCommando.h"
 #include "LoSVisualizer.h"
 #include "LoSObstacle.h"
+#include "Util.h"
 
 
 // Sets default values
@@ -29,17 +30,43 @@ void ALoSVisualizer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	FVector Forward3D = GetActorForwardVector();
+	FVector2D Forward2D = FVector2D(Forward3D.X, Forward3D.Y);
+	FVector Location3D = GetActorLocation();
+	FVector2D Location2D = FVector2D(Location3D.X, Location3D.Y);
+
+	TArray<FVector2D> Corners;
 	TArray<AActor*> OverlappingActors;
 	Sphere->GetOverlappingActors(OverlappingActors, ALoSObstacle::StaticClass());
-	for (auto& Actor : OverlappingActors)
+	for (const auto& Actor : OverlappingActors)
 	{
-		UE_LOG(LogActor, Warning, TEXT("Actor overlap %s"), *Actor->GetName());
 		ALoSObstacle* Obstacle = Cast<ALoSObstacle>(Actor);
-		const TArray<FVector2D> Corners = Obstacle->GetCorners();
-		//Corners[0].X = 0;
-		//Corners[0] = FVector2D::ZeroVector;
+		for (const auto& Corner : Obstacle->GetCorners())
+		{
+			FVector2D V = Corner - Location2D;
+			V.Normalize();
+			Corners.Add(V);
+		}
+	}
+
+	// Take just the corners inside the FoV
+	Corners = Corners.FilterByPredicate([&](const FVector2D& A)
+		{
+			return FUtil::Angle2D(Forward2D, A) <= FoV;
+		});
+
+	// Sort by the angle
+	Corners.HeapSort([&](const FVector2D& A, const FVector2D& B)
+		{
+			return FUtil::SignedAngle2D(Forward2D, A) < FUtil::SignedAngle2D(Forward2D, B);
+		});
+
+	for (const auto& V : Corners)
+	{
+		UE_LOG(LogActor, Warning, TEXT("U: %f A: %f F: %s V: %s"), FUtil::Angle2D(Forward2D, V), FUtil::SignedAngle2D(Forward2D, V), *Forward2D.ToString(), *V.ToString());
 	}
 }
+
 #if WITH_EDITOR
 void ALoSVisualizer::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
 {
