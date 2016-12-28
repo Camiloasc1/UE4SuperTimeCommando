@@ -40,3 +40,5 @@ public:
 protected:
 	virtual void UpdateSphereRadius();
 };
+
+class LoSObstacle;

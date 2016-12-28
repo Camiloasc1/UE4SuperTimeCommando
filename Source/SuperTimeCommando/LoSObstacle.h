@@ -33,4 +33,10 @@ public:
 public:
 	// Calculates the corners based on the actor's bounds
 	virtual void UpdateCorners();
+
+	// Get the corners
+	FORCEINLINE const TArray<FVector2D>& GetCorners() const
+	{
+		return Corners;
+	}
 };
