@@ -11,8 +11,12 @@ class SUPERTIMECOMMANDO_API ALoSVisualizer : public AActor
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(VisibleAnywhere)
+	class USphereComponent* Sphere;
+
+public:
 	// The field of view
-	UPROPERTY(EditAnywhere, Category="Sight")
+	UPROPERTY(EditAnywhere, Category="Sight", meta = (ClampMin = 0, ClampMax = 360, DisplayName = "Field of View"))
 	float FoV;
 
 	// The maximum sight distance
@@ -28,4 +32,11 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaSeconds) override;
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
+
+protected:
+	virtual void UpdateSphereRadius();
 };
