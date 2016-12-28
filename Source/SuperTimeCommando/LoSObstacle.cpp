@@ -9,7 +9,7 @@ ALoSObstacle::ALoSObstacle()
 {
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
@@ -25,10 +25,9 @@ void ALoSObstacle::BeginPlay()
 }
 
 // Called every frame
-void ALoSObstacle::Tick( float DeltaTime )
+void ALoSObstacle::Tick(float DeltaTime)
 {
-	Super::Tick( DeltaTime );
-
+	Super::Tick(DeltaTime);
 }
 
 // Calculates the corners based on the actor's bounds

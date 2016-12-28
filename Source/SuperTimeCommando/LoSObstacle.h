@@ -9,7 +9,7 @@ UCLASS()
 class SUPERTIMECOMMANDO_API ALoSObstacle : public AActor
 {
 	GENERATED_BODY()
-		
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class UStaticMeshComponent* Mesh;
@@ -33,5 +33,4 @@ public:
 public:
 	// Calculates the corners based on the actor's bounds
 	virtual void UpdateCorners();
-
 };
