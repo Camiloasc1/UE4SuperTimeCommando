@@ -153,7 +153,7 @@ void ALoSVisualizer::UpdateProceduralMesh()
 	UV0.Init(FVector2D(0.f, 0.f), Vertices.Num());
 
 	TArray<FColor> VertexColors;
-	VertexColors.Init(FColor(255, 0, 0), Vertices.Num());
+	VertexColors.Init(FColor(255, 255, 255), Vertices.Num());
 
 	TArray<FProcMeshTangent> Tangents;
 	Tangents.Init(FProcMeshTangent(), Vertices.Num());
