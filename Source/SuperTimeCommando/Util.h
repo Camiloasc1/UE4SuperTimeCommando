@@ -2,7 +2,7 @@
 
 #pragma once
 
-struct FUtil
+struct GUtil
 {
 	static FORCEINLINE float SignedAngle2D(const FVector2D& A, const FVector2D& B)
 	{

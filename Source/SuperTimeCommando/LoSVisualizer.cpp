@@ -81,7 +81,7 @@ void ALoSVisualizer::CalculateCorners(TArray<FVector2D>& OutCorners)
 	// Take just the corners inside the FoV
 	OutCorners = OutCorners.FilterByPredicate([&](const FVector2D& A)
 		{
-			return FUtil::Angle2D(Forward2D, A) <= FoV;
+			return GUtil::Angle2D(Forward2D, A) <= FoV;
 		});
 
 	// Add a small tolerance arround the corners
@@ -107,7 +107,7 @@ void ALoSVisualizer::CalculateCorners(TArray<FVector2D>& OutCorners)
 	// Sort by the angle
 	OutCorners.HeapSort([&](const FVector2D& A, const FVector2D& B)
 		{
-			return FUtil::SignedAngle2D(Forward2D, A) < FUtil::SignedAngle2D(Forward2D, B);
+			return GUtil::SignedAngle2D(Forward2D, A) < GUtil::SignedAngle2D(Forward2D, B);
 		});
 }
 
