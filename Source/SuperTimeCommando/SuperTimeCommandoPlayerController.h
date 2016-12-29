@@ -16,6 +16,8 @@ public:
 public:
 	ASuperTimeCommandoPlayerController();
 
+	void BeginPlay() override;
+
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
@@ -46,4 +48,7 @@ protected:
 
 	void MoveForward(float Value);
 	void MoveRight(float Value);
+
+private:
+	bool bHasMoved;
 };
