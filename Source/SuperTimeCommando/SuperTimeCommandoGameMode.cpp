@@ -4,6 +4,7 @@
 #include "SuperTimeCommandoGameMode.h"
 #include "SuperTimeCommandoPlayerController.h"
 #include "SuperTimeCommandoCharacter.h"
+#include "SuperTimeCommandoGameState.h"
 
 ASuperTimeCommandoGameMode::ASuperTimeCommandoGameMode()
 {
@@ -16,4 +17,6 @@ ASuperTimeCommandoGameMode::ASuperTimeCommandoGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+
+	GameStateClass = ASuperTimeCommandoGameState::StaticClass();
 }
