@@ -6,21 +6,46 @@
 #include "Runtime/Engine/Classes/Components/DecalComponent.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "SuperTimeCommandoCharacter.h"
+#include "SuperTimeCommandoGameState.h"
+#include "ActorHistory.h"
 
 ASuperTimeCommandoPlayerController::ASuperTimeCommandoPlayerController()
 {
+	ActorHistory = CreateDefaultSubobject<UActorHistory>(TEXT("ActorHistory"));
+	ActorHistory->SetupAttachment(RootComponent);
+
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Crosshairs;
+}
+
+void ASuperTimeCommandoPlayerController::BeginPlay()
+{
+	GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
+	ActorHistory->Checkpoints.Add(FCheckpoint(Spawn, GetWorld()->GetTimeSeconds(), GetPawn()->GetActorLocation()));
+	bHasMoved = true;
 }
 
 void ASuperTimeCommandoPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
-	// keep updating the destination every tick while desired
-	if (bMoveToMouseCursor)
+	if (GameState->bIsTimeBackward)
 	{
-		MoveToMouseCursor();
+		if (ActorHistory->Checkpoints.Num() > 0 && ActorHistory->Checkpoints.Top().CheckpointType == Checkpoint)
+		{
+			FCheckpoint Checkpoint = ActorHistory->Checkpoints.Pop();
+			//GetPawn()->SetActorLocation(Checkpoint.Location);
+			// This looks better
+			GetPawn()->AddMovementInput(Checkpoint.Location - GetPawn()->GetActorLocation(), 1.f);
+		}
+	}
+	else
+	{
+		if (bHasMoved)
+		{
+			ActorHistory->Checkpoints.Push(FCheckpoint(Checkpoint, GetWorld()->GetTimeSeconds(), GetPawn()->GetActorLocation()));
+			bHasMoved = false;
+		}
 	}
 }
 
@@ -29,14 +54,13 @@ void ASuperTimeCommandoPlayerController::SetupInputComponent()
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
 
-	InputComponent->BindAction("SetDestination", IE_Pressed, this, &ASuperTimeCommandoPlayerController::OnSetDestinationPressed);
-	InputComponent->BindAction("SetDestination", IE_Released, this, &ASuperTimeCommandoPlayerController::OnSetDestinationReleased);
+	// Movement
+	InputComponent->BindAxis("MoveForward", this, &ASuperTimeCommandoPlayerController::MoveForward);
+	InputComponent->BindAxis("MoveRight", this, &ASuperTimeCommandoPlayerController::MoveRight);
 
-	// support touch devices 
-	InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &ASuperTimeCommandoPlayerController::MoveToTouchLocation);
-	InputComponent->BindTouch(EInputEvent::IE_Repeat, this, &ASuperTimeCommandoPlayerController::MoveToTouchLocation);
-
-	InputComponent->BindAction("ResetVR", IE_Pressed, this, &ASuperTimeCommandoPlayerController::OnResetVR);
+	// Time rewind
+	InputComponent->BindAction("ReverseTime", IE_Pressed, this, &ASuperTimeCommandoPlayerController::OnReverseTimePressed);
+	InputComponent->BindAction("ReverseTime", IE_Released, this, &ASuperTimeCommandoPlayerController::OnReverseTimeReleased);
 }
 
 void ASuperTimeCommandoPlayerController::OnResetVR()
@@ -110,4 +134,49 @@ void ASuperTimeCommandoPlayerController::OnSetDestinationReleased()
 {
 	// clear flag to indicate we should stop updating the destination
 	bMoveToMouseCursor = false;
+}
+
+void ASuperTimeCommandoPlayerController::OnReverseTimePressed()
+{
+	GameState->bIsTimeBackward = true;
+}
+
+void ASuperTimeCommandoPlayerController::OnReverseTimeReleased()
+{
+	GameState->bIsTimeBackward = false;
+}
+
+
+void ASuperTimeCommandoPlayerController::MoveForward(float Value)
+{
+	if (Value != 0.0f)
+	{
+		bHasMoved = true;
+
+		// find out which way is forward
+		const FRotator Rotation = GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get forward vector
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		// add movement in that direction
+		GetPawn()->AddMovementInput(Direction, Value);
+	}
+}
+
+void ASuperTimeCommandoPlayerController::MoveRight(float Value)
+{
+	if (Value != 0.0f)
+	{
+		bHasMoved = true;
+
+		// find out which way is right
+		const FRotator Rotation = GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get right vector 
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		// add movement in that direction
+		GetPawn()->AddMovementInput(Direction, Value);
+	}
 }

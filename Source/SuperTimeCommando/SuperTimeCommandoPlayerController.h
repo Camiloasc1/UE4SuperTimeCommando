@@ -9,7 +9,13 @@ class ASuperTimeCommandoPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
+	UPROPERTY()
+	class UActorHistory* ActorHistory;
+
+public:
 	ASuperTimeCommandoPlayerController();
+
+	void BeginPlay() override;
 
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
@@ -28,13 +34,21 @@ protected:
 
 	/** Navigate player to the current touch location. */
 	void MoveToTouchLocation(const ETouchIndex::Type FingerIndex, const FVector Location);
-	
+
 	/** Navigate player to the given world location. */
 	void SetNewMoveDestination(const FVector DestLocation);
 
 	/** Input handlers for SetDestination action. */
 	void OnSetDestinationPressed();
 	void OnSetDestinationReleased();
+
+	void OnReverseTimePressed();
+	void OnReverseTimeReleased();
+
+	void MoveForward(float Value);
+	void MoveRight(float Value);
+
+private:
+	class ASuperTimeCommandoGameState* GameState;
+	bool bHasMoved;
 };
-
-
