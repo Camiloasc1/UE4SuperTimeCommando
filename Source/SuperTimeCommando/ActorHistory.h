@@ -13,14 +13,20 @@ enum ECheckpointType
 	Checkpoint,
 };
 
-
+USTRUCT()
 struct FCheckpoint
 {
+	GENERATED_BODY()
+
 	ECheckpointType CheckpointType;
 
 	float Time;
 
 	FVector Location;
+
+	FORCEINLINE FCheckpoint()
+	{
+	}
 
 	FORCEINLINE FCheckpoint(ECheckpointType CheckpointType, float Time, const FVector& Location)
 		: CheckpointType(CheckpointType),
@@ -56,6 +62,7 @@ class SUPERTIMECOMMANDO_API UActorHistory : public USceneComponent
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<FCheckpoint> Checkpoints;
 
 public:

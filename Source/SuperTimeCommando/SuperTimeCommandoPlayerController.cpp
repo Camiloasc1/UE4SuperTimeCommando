@@ -10,18 +10,28 @@
 
 ASuperTimeCommandoPlayerController::ASuperTimeCommandoPlayerController()
 {
+	ActorHistory = CreateDefaultSubobject<UActorHistory>(TEXT("ActorHistory"));
+	ActorHistory->SetupAttachment(RootComponent);
+
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Crosshairs;
+}
+
+void ASuperTimeCommandoPlayerController::BeginPlay()
+{
+	ActorHistory->Checkpoints.Add(FCheckpoint(Spawn, GetWorld()->GetTimeSeconds(), GetPawn()->GetActorLocation()));
+	bHasMoved = true;
 }
 
 void ASuperTimeCommandoPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
-	// keep updating the destination every tick while desired
-	if (bMoveToMouseCursor)
+	UE_LOG(LogTemp, Warning, TEXT("Size: %d"), ActorHistory->Checkpoints.Num());
+	if (bHasMoved)
 	{
-		MoveToMouseCursor();
+		ActorHistory->Checkpoints.Add(FCheckpoint(Checkpoint, GetWorld()->GetTimeSeconds(), GetPawn()->GetActorLocation()));
+		bHasMoved = false;
 	}
 }
 
@@ -30,17 +40,13 @@ void ASuperTimeCommandoPlayerController::SetupInputComponent()
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
 
-	InputComponent->BindAction("SetDestination", IE_Pressed, this, &ASuperTimeCommandoPlayerController::OnSetDestinationPressed);
-	InputComponent->BindAction("SetDestination", IE_Released, this, &ASuperTimeCommandoPlayerController::OnSetDestinationReleased);
+	// Movement
+	InputComponent->BindAxis("MoveForward", this, &ASuperTimeCommandoPlayerController::MoveForward);
+	InputComponent->BindAxis("MoveRight", this, &ASuperTimeCommandoPlayerController::MoveRight);
 
-	// support touch devices 
-	InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &ASuperTimeCommandoPlayerController::MoveToTouchLocation);
-	InputComponent->BindTouch(EInputEvent::IE_Repeat, this, &ASuperTimeCommandoPlayerController::MoveToTouchLocation);
-
-	InputComponent->BindAction("ResetVR", IE_Pressed, this, &ASuperTimeCommandoPlayerController::OnResetVR);
-
-	InputComponent->BindAction("Reversetime", IE_Pressed, this, &ASuperTimeCommandoPlayerController::OnReverseTimePressed);
-	InputComponent->BindAction("Reversetime", IE_Released, this, &ASuperTimeCommandoPlayerController::OnReverseTimeReleased);
+	// Time rewind
+	InputComponent->BindAction("ReverseTime", IE_Pressed, this, &ASuperTimeCommandoPlayerController::OnReverseTimePressed);
+	InputComponent->BindAction("ReverseTime", IE_Released, this, &ASuperTimeCommandoPlayerController::OnReverseTimeReleased);
 }
 
 void ASuperTimeCommandoPlayerController::OnResetVR()
@@ -126,4 +132,39 @@ void ASuperTimeCommandoPlayerController::OnReverseTimeReleased()
 {
 	ASuperTimeCommandoGameState* GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
 	GameState->bIsTimeBackward = false;
+}
+
+
+void ASuperTimeCommandoPlayerController::MoveForward(float Value)
+{
+	if (Value != 0.0f)
+	{
+		bHasMoved = true;
+
+		// find out which way is forward
+		const FRotator Rotation = GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get forward vector
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		// add movement in that direction
+		GetPawn()->AddMovementInput(Direction, Value);
+	}
+}
+
+void ASuperTimeCommandoPlayerController::MoveRight(float Value)
+{
+	if (Value != 0.0f)
+	{
+		bHasMoved = true;
+
+		// find out which way is right
+		const FRotator Rotation = GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get right vector 
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		// add movement in that direction
+		GetPawn()->AddMovementInput(Direction, Value);
+	}
 }
