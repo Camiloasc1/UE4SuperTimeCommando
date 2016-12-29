@@ -26,6 +26,14 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Sight")
 	float MaxDistance;
 
+	// The delta for detailed corners
+	UPROPERTY(EditAnywhere, Category = "Sight",meta = (ClampMin = 0.1, ClampMax = 180))
+	float Delta;
+
+	// The number of segments used to give more detail to the sight cone
+	UPROPERTY(EditAnywhere, Category = "Sight", meta = (ClampMin = 0))
+	int8 Segments;
+
 public:
 	// Sets default values for this actor's properties
 	ALoSVisualizer();
@@ -42,7 +50,7 @@ public:
 
 protected:
 	//  Calculate the corners for the sight cone
-	virtual void CalculateCorners();
+	virtual void CalculateCorners(TArray<FVector2D>& OutCorners);
 	// Generate the sight cone mesh
 	virtual void UpdateProceduralMesh();
 	// Set the sphere radius as MaxDistance

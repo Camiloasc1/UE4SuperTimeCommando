@@ -6,11 +6,15 @@ struct FUtil
 {
 	static FORCEINLINE float SignedAngle2D(const FVector2D& A, const FVector2D& B)
 	{
-		return FMath::RadiansToDegrees(atan2(FVector2D::CrossProduct(A, B), FVector2D::DotProduct(A, B)));
+		FVector2D An = A.GetSafeNormal();
+		FVector2D Bn = B.GetSafeNormal();
+		return FMath::RadiansToDegrees(atan2(FVector2D::CrossProduct(An, Bn), FVector2D::DotProduct(An, Bn)));
 	}
 
 	static FORCEINLINE float Angle2D(const FVector2D& A, const FVector2D& B)
 	{
-		return FMath::RadiansToDegrees(acos(FVector2D::DotProduct(A, B)));
+		FVector2D An = A.GetSafeNormal();
+		FVector2D Bn = B.GetSafeNormal();
+		return FMath::RadiansToDegrees(acos(FVector2D::DotProduct(An, Bn)));
 	}
 };
