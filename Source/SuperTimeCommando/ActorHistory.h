@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include "Components/SceneComponent.h"
+#include "ActorHistory.generated.h"
+
 UENUM(BlueprintType)
 enum ECheckpointType
 {
@@ -47,7 +50,21 @@ struct FCheckpoint
 	}
 };
 
-struct FActorHistory
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+class SUPERTIMECOMMANDO_API UActorHistory : public USceneComponent
 {
+	GENERATED_BODY()
+
+public:
 	TArray<FCheckpoint> Checkpoints;
+
+public:
+	// Sets default values for this component's properties
+	UActorHistory();
+
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 };
