@@ -6,6 +6,7 @@
 #include "Runtime/Engine/Classes/Components/DecalComponent.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "SuperTimeCommandoCharacter.h"
+#include "SuperTimeCommandoGameState.h"
 
 ASuperTimeCommandoPlayerController::ASuperTimeCommandoPlayerController()
 {
@@ -37,6 +38,9 @@ void ASuperTimeCommandoPlayerController::SetupInputComponent()
 	InputComponent->BindTouch(EInputEvent::IE_Repeat, this, &ASuperTimeCommandoPlayerController::MoveToTouchLocation);
 
 	InputComponent->BindAction("ResetVR", IE_Pressed, this, &ASuperTimeCommandoPlayerController::OnResetVR);
+
+	InputComponent->BindAction("Reversetime", IE_Pressed, this, &ASuperTimeCommandoPlayerController::OnReverseTimePressed);
+	InputComponent->BindAction("Reversetime", IE_Released, this, &ASuperTimeCommandoPlayerController::OnReverseTimeReleased);
 }
 
 void ASuperTimeCommandoPlayerController::OnResetVR()
@@ -110,4 +114,16 @@ void ASuperTimeCommandoPlayerController::OnSetDestinationReleased()
 {
 	// clear flag to indicate we should stop updating the destination
 	bMoveToMouseCursor = false;
+}
+
+void ASuperTimeCommandoPlayerController::OnReverseTimePressed()
+{
+	ASuperTimeCommandoGameState* GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
+	GameState->bIsTimeBackward = true;
+}
+
+void ASuperTimeCommandoPlayerController::OnReverseTimeReleased()
+{
+	ASuperTimeCommandoGameState* GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
+	GameState->bIsTimeBackward = false;
 }
