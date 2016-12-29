@@ -7,6 +7,7 @@
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "SuperTimeCommandoCharacter.h"
 #include "SuperTimeCommandoGameState.h"
+#include "ActorHistory.h"
 
 ASuperTimeCommandoPlayerController::ASuperTimeCommandoPlayerController()
 {
@@ -19,6 +20,7 @@ ASuperTimeCommandoPlayerController::ASuperTimeCommandoPlayerController()
 
 void ASuperTimeCommandoPlayerController::BeginPlay()
 {
+	GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
 	ActorHistory->Checkpoints.Add(FCheckpoint(Spawn, GetWorld()->GetTimeSeconds(), GetPawn()->GetActorLocation()));
 	bHasMoved = true;
 }
@@ -27,11 +29,23 @@ void ASuperTimeCommandoPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
-	UE_LOG(LogTemp, Warning, TEXT("Size: %d"), ActorHistory->Checkpoints.Num());
-	if (bHasMoved)
+	if (GameState->bIsTimeBackward)
 	{
-		ActorHistory->Checkpoints.Add(FCheckpoint(Checkpoint, GetWorld()->GetTimeSeconds(), GetPawn()->GetActorLocation()));
-		bHasMoved = false;
+		if (ActorHistory->Checkpoints.Num() > 0 && ActorHistory->Checkpoints.Top().CheckpointType == Checkpoint)
+		{
+			FCheckpoint Checkpoint = ActorHistory->Checkpoints.Pop();
+			//GetPawn()->SetActorLocation(Checkpoint.Location);
+			// This looks better
+			GetPawn()->AddMovementInput(Checkpoint.Location - GetPawn()->GetActorLocation(), 1.f);
+		}
+	}
+	else
+	{
+		if (bHasMoved)
+		{
+			ActorHistory->Checkpoints.Push(FCheckpoint(Checkpoint, GetWorld()->GetTimeSeconds(), GetPawn()->GetActorLocation()));
+			bHasMoved = false;
+		}
 	}
 }
 
@@ -124,13 +138,11 @@ void ASuperTimeCommandoPlayerController::OnSetDestinationReleased()
 
 void ASuperTimeCommandoPlayerController::OnReverseTimePressed()
 {
-	ASuperTimeCommandoGameState* GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
 	GameState->bIsTimeBackward = true;
 }
 
 void ASuperTimeCommandoPlayerController::OnReverseTimeReleased()
 {
-	ASuperTimeCommandoGameState* GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
 	GameState->bIsTimeBackward = false;
 }
 

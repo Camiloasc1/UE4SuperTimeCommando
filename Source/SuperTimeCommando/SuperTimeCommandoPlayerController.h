@@ -1,7 +1,6 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "GameFramework/PlayerController.h"
-#include "ActorHistory.h"
 #include "SuperTimeCommandoPlayerController.generated.h"
 
 UCLASS()
@@ -11,7 +10,7 @@ class ASuperTimeCommandoPlayerController : public APlayerController
 
 public:
 	UPROPERTY()
-	UActorHistory* ActorHistory;
+	class UActorHistory* ActorHistory;
 
 public:
 	ASuperTimeCommandoPlayerController();
@@ -50,5 +49,6 @@ protected:
 	void MoveRight(float Value);
 
 private:
+	class ASuperTimeCommandoGameState* GameState;
 	bool bHasMoved;
 };
