@@ -10,6 +10,8 @@
 
 ASuperTimeCommandoPlayerController::ASuperTimeCommandoPlayerController()
 {
+	ActorHistory = CreateDefaultSubobject<UActorHistory>(TEXT("ActorHistory"));
+
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Crosshairs;
 }
