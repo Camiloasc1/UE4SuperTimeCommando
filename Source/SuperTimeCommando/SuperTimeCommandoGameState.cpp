@@ -17,9 +17,9 @@ void ASuperTimeCommandoGameState::SetTimeBackward(bool Value)
 	}
 
 	bIsTimeBackward = Value;
-	TimePivot = bIsTimeBackward ? GetWorld()->GetTimeSeconds() : 0;
 	if (bIsTimeBackward)
 	{
+		TimePivot = GetWorld()->GetTimeSeconds();
 		OnTimeBeginBackward.Broadcast();
 	}
 	else

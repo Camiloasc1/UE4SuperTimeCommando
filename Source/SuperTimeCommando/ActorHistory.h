@@ -69,6 +69,7 @@ protected:
 public:
 	// Sets default values for this component's properties
 	UActorHistory();
+
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
@@ -86,7 +87,13 @@ public:
 protected:
 	void Push(ECheckpointType CheckpointType);
 
+	UFUNCTION()
+	void OnTimeBeginBackward();
+	UFUNCTION()
+	void OnTimeEndBackward();
+
 private:
+	bool HasOwnerPawn() const;
 	APawn* GetOwnerPawn() const;
 };
 
