@@ -34,9 +34,14 @@ void ASuperTimeCommandoPlayerController::PlayerTick(float DeltaTime)
 		if (ActorHistory->Checkpoints.Num() > 0 && ActorHistory->Checkpoints.Top().CheckpointType == Checkpoint)
 		{
 			FCheckpoint Checkpoint = ActorHistory->Checkpoints.Pop();
-			//GetPawn()->SetActorLocation(Checkpoint.Location);
-			// This looks better
-			GetPawn()->AddMovementInput(Checkpoint.Location - GetPawn()->GetActorLocation(), 1.f);
+			// This looks better than just SetActorLocation
+			FVector Movement = Checkpoint.Location - GetPawn()->GetActorLocation();
+			GetPawn()->AddMovementInput(Movement, 1.f);
+			// If is so far thus teleport
+			if (Movement.Size() > 100)
+			{
+				GetPawn()->SetActorLocation(Checkpoint.Location);
+			}
 		}
 	}
 	else
