@@ -21,6 +21,7 @@ ASuperTimeCommandoPlayerController::ASuperTimeCommandoPlayerController()
 void ASuperTimeCommandoPlayerController::BeginPlay()
 {
 	GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
+
 	ActorHistory->PushSpawn();
 	bHasMoved = true;
 }
@@ -29,7 +30,7 @@ void ASuperTimeCommandoPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
-	if (GameState->bIsTimeBackward)
+	if (GameState->IsTimeBackward())
 	{
 		ActorHistory->PopCheckpoint();
 	}
@@ -132,18 +133,18 @@ void ASuperTimeCommandoPlayerController::OnSetDestinationReleased()
 
 void ASuperTimeCommandoPlayerController::OnReverseTimePressed()
 {
-	GameState->bIsTimeBackward = true;
+	GameState->SetTimeBackward(true);
 }
 
 void ASuperTimeCommandoPlayerController::OnReverseTimeReleased()
 {
-	GameState->bIsTimeBackward = false;
+	GameState->SetTimeBackward(false);
 }
 
 
 void ASuperTimeCommandoPlayerController::MoveForward(float Value)
 {
-	if (Value != 0.0f && !GameState->bIsTimeBackward)
+	if (Value != 0.0f && !GameState->IsTimeBackward())
 	{
 		bHasMoved = true;
 
@@ -160,7 +161,7 @@ void ASuperTimeCommandoPlayerController::MoveForward(float Value)
 
 void ASuperTimeCommandoPlayerController::MoveRight(float Value)
 {
-	if (Value != 0.0f && !GameState->bIsTimeBackward)
+	if (Value != 0.0f && !GameState->IsTimeBackward())
 	{
 		bHasMoved = true;
 

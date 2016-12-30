@@ -11,6 +11,12 @@ class SUPERTIMECOMMANDO_API ASuperTimeCommandoGameState : public AGameStateBase
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsTimeBackward() const;
+	void SetTimeBackward(bool BIsTimeBackward);
+
+private:
+	// Is the time going back?
 	bool bIsTimeBackward;
+	// When the time started to go back
+	float TimePivot;
 };
