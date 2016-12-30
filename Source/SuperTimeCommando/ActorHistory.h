@@ -9,7 +9,7 @@ UENUM(BlueprintType)
 enum ECheckpointType
 {
 	Spawn,
-	Die,
+	Death,
 	Checkpoint,
 };
 
@@ -61,17 +61,34 @@ class SUPERTIMECOMMANDO_API UActorHistory : public USceneComponent
 {
 	GENERATED_BODY()
 
-public:
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<FCheckpoint> Checkpoints;
 
 public:
 	// Sets default values for this component's properties
 	UActorHistory();
-
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Actor History")
+	void PushSpawn();
+	UFUNCTION(BlueprintCallable, Category = "Actor History")
+	void PushDeath();
+	UFUNCTION(BlueprintCallable, Category = "Actor History")
+	void PushCheckpoint();
+
+	UFUNCTION(BlueprintCallable, Category = "Actor History")
+	void PopCheckpoint();
+
+protected:
+	UFUNCTION(BlueprintCallable, Category = "Actor History")
+	void Push(ECheckpointType CheckpointType);
+
+private:
+	APawn* GetOwnerPawn() const;
 };

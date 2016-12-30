@@ -13,14 +13,12 @@ UActorHistory::UActorHistory()
 	// ...
 }
 
-
 // Called when the game starts
 void UActorHistory::BeginPlay()
 {
 	Super::BeginPlay();
 
 	// ...
-
 }
 
 
@@ -32,3 +30,42 @@ void UActorHistory::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	// ...
 }
 
+void UActorHistory::PushSpawn()
+{
+	Push(Spawn);
+}
+
+void UActorHistory::PushDeath()
+{
+	Push(Death);
+}
+
+void UActorHistory::PushCheckpoint()
+{
+	Push(Checkpoint);
+}
+
+void UActorHistory::PopCheckpoint()
+{
+	if (Checkpoints.Num() > 0 && Checkpoints.Top().CheckpointType == Checkpoint)
+	{
+		FCheckpoint Checkpoint = Checkpoints.Pop();
+		FVector Movement = Checkpoint.Location - GetOwnerPawn()->GetActorLocation();
+		GetOwnerPawn()->AddMovementInput(Movement, 1.f);
+		// If it is so far then teleport
+		if (Movement.Size() > 100)
+		{
+			GetOwnerPawn()->SetActorLocation(Checkpoint.Location);
+		}
+	}
+}
+
+void UActorHistory::Push(ECheckpointType CheckpointType)
+{
+	Checkpoints.Push(FCheckpoint(CheckpointType, GetWorld()->GetTimeSeconds(), GetOwnerPawn()->GetActorLocation()));
+}
+
+APawn* UActorHistory::GetOwnerPawn() const
+{
+	return Cast<APlayerController>(GetOwner())->GetPawn();
+}
