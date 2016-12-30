@@ -21,7 +21,8 @@ ASuperTimeCommandoPlayerController::ASuperTimeCommandoPlayerController()
 void ASuperTimeCommandoPlayerController::BeginPlay()
 {
 	GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
-	ActorHistory->Checkpoints.Add(FCheckpoint(Spawn, GetWorld()->GetTimeSeconds(), GetPawn()->GetActorLocation()));
+
+	ActorHistory->PushSpawn();
 	bHasMoved = true;
 }
 
@@ -29,21 +30,24 @@ void ASuperTimeCommandoPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
-	if (GameState->bIsTimeBackward)
+	if (GameState->IsTimeBackward())
 	{
-		if (ActorHistory->Checkpoints.Num() > 0 && ActorHistory->Checkpoints.Top().CheckpointType == Checkpoint)
-		{
-			FCheckpoint Checkpoint = ActorHistory->Checkpoints.Pop();
-			//GetPawn()->SetActorLocation(Checkpoint.Location);
-			// This looks better
-			GetPawn()->AddMovementInput(Checkpoint.Location - GetPawn()->GetActorLocation(), 1.f);
-		}
+		ActorHistory->PopCheckpoint([&](const FCheckpoint& Checkpoint)
+			{
+				FVector Movement = Checkpoint.Location - GetPawn()->GetActorLocation();
+				GetPawn()->AddMovementInput(Movement, 1.f);
+				// If it is so far then teleport
+				if (Movement.Size() > 100)
+				{
+					GetPawn()->SetActorLocation(Checkpoint.Location);
+				}
+			});
 	}
 	else
 	{
 		if (bHasMoved)
 		{
-			ActorHistory->Checkpoints.Push(FCheckpoint(Checkpoint, GetWorld()->GetTimeSeconds(), GetPawn()->GetActorLocation()));
+			ActorHistory->PushCheckpoint();
 			bHasMoved = false;
 		}
 	}
@@ -138,18 +142,18 @@ void ASuperTimeCommandoPlayerController::OnSetDestinationReleased()
 
 void ASuperTimeCommandoPlayerController::OnReverseTimePressed()
 {
-	GameState->bIsTimeBackward = true;
+	GameState->SetTimeBackward(true);
 }
 
 void ASuperTimeCommandoPlayerController::OnReverseTimeReleased()
 {
-	GameState->bIsTimeBackward = false;
+	GameState->SetTimeBackward(false);
 }
 
 
 void ASuperTimeCommandoPlayerController::MoveForward(float Value)
 {
-	if (Value != 0.0f)
+	if (Value != 0.0f && !GameState->IsTimeBackward())
 	{
 		bHasMoved = true;
 
@@ -166,7 +170,7 @@ void ASuperTimeCommandoPlayerController::MoveForward(float Value)
 
 void ASuperTimeCommandoPlayerController::MoveRight(float Value)
 {
-	if (Value != 0.0f)
+	if (Value != 0.0f && !GameState->IsTimeBackward())
 	{
 		bHasMoved = true;
 

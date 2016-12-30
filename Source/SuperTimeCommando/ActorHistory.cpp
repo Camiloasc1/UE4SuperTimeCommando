@@ -13,14 +13,12 @@ UActorHistory::UActorHistory()
 	// ...
 }
 
-
 // Called when the game starts
 void UActorHistory::BeginPlay()
 {
 	Super::BeginPlay();
 
 	// ...
-
 }
 
 
@@ -32,3 +30,27 @@ void UActorHistory::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	// ...
 }
 
+void UActorHistory::PushSpawn()
+{
+	Push(Spawn);
+}
+
+void UActorHistory::PushDeath()
+{
+	Push(Death);
+}
+
+void UActorHistory::PushCheckpoint()
+{
+	Push(Checkpoint);
+}
+
+void UActorHistory::Push(ECheckpointType CheckpointType)
+{
+	Checkpoints.Push(FCheckpoint(CheckpointType, GetWorld()->GetTimeSeconds(), GetOwnerPawn()->GetActorLocation()));
+}
+
+APawn* UActorHistory::GetOwnerPawn() const
+{
+	return Cast<APlayerController>(GetOwner())->GetPawn();
+}
