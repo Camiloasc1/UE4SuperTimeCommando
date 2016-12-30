@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Components/SceneComponent.h"
+#include "SuperTimeCommandoGameState.h"
 #include "ActorHistory.generated.h"
 
 UENUM(BlueprintType)
@@ -18,7 +19,7 @@ struct FCheckpoint
 {
 	GENERATED_BODY()
 
-	ECheckpointType CheckpointType;
+		ECheckpointType CheckpointType;
 
 	float Time;
 
@@ -57,10 +58,10 @@ struct FCheckpoint
 };
 
 UCLASS()
+
 class SUPERTIMECOMMANDO_API UActorHistory : public USceneComponent
 {
 	GENERATED_BODY()
-
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<FCheckpoint> Checkpoints;
@@ -80,13 +81,7 @@ public:
 	void PushCheckpoint();
 
 	template <class ACTION_CLASS>
-	void PopCheckpoint(const ACTION_CLASS& Action)
-	{
-		if (Checkpoints.Num() > 0 && Checkpoints.Top().CheckpointType == Checkpoint)
-		{
-			Action(Checkpoints.Pop());
-		}
-	}
+	void PopCheckpoint(const ACTION_CLASS& Action);
 
 protected:
 	void Push(ECheckpointType CheckpointType);
@@ -94,3 +89,22 @@ protected:
 private:
 	APawn* GetOwnerPawn() const;
 };
+
+
+template <class ACTION_CLASS>
+void UActorHistory::PopCheckpoint(const ACTION_CLASS& Action)
+{
+	if (Checkpoints.Num() > 0 && Checkpoints.Top().CheckpointType == Checkpoint)
+	{
+		ASuperTimeCommandoGameState* GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
+
+		// Check if enough time has passed since the pivot
+		float CurrentTime = GetWorld()->GetTimeSeconds();
+		float CheckpointTime = Checkpoints.Top().Time;
+		float PivotTime = GameState->GetTimePivot();
+		if (CurrentTime - PivotTime >= PivotTime - CheckpointTime)
+		{
+			Action(Checkpoints.Pop());
+		}
+	}
+}
