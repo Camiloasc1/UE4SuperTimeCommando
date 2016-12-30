@@ -14,6 +14,11 @@ public:
 	bool IsTimeBackward() const;
 	void SetTimeBackward(bool BIsTimeBackward);
 
+	FORCEINLINE float GetTimePivot() const
+	{
+		return TimePivot;
+	}
+
 private:
 	// Is the time going back?
 	bool bIsTimeBackward;

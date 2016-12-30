@@ -9,7 +9,8 @@ bool ASuperTimeCommandoGameState::IsTimeBackward() const
 	return bIsTimeBackward;
 }
 
-void ASuperTimeCommandoGameState::SetTimeBackward(bool BIsTimeBackward)
+void ASuperTimeCommandoGameState::SetTimeBackward(bool Value)
 {
-	bIsTimeBackward = BIsTimeBackward;
+	bIsTimeBackward = Value;
+	TimePivot = bIsTimeBackward ? GetWorld()->GetTimeSeconds() : 0;
 }
