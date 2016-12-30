@@ -57,11 +57,11 @@ struct FCheckpoint
 	}
 };
 
-UCLASS()
-
+UCLASS(ClassGroup = (SuperTimeCommando), meta = (BlueprintSpawnableComponent))
 class SUPERTIMECOMMANDO_API UActorHistory : public USceneComponent
 {
 	GENERATED_BODY()
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<FCheckpoint> Checkpoints;

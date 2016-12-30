@@ -19,10 +19,6 @@ void UActorHistory::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-
-	UE_LOG(LogTemp, Warning, TEXT("Bind"));
-
 	ASuperTimeCommandoGameState* GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
 	GameState->OnTimeBeginBackward.AddDynamic(this, &UActorHistory::OnTimeBeginBackward);
 	GameState->OnTimeEndBackward.AddDynamic(this, &UActorHistory::OnTimeEndBackward);
@@ -66,10 +62,10 @@ void UActorHistory::OnTimeBeginBackward()
 
 void UActorHistory::OnTimeEndBackward()
 {
-	ASuperTimeCommandoGameState* GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
+	float Delta = GetWorld()->GetTimeSeconds() - GetWorld()->GetGameState<ASuperTimeCommandoGameState>()->GetTimePivot();
 	for (auto& Checkpoint : Checkpoints)
 	{
-		Checkpoint.Time += GetWorld()->GetTimeSeconds() - GameState->GetTimePivot();
+		Checkpoint.Time += Delta;
 	}
 }
 
