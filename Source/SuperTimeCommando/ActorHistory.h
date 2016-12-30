@@ -56,7 +56,7 @@ struct FCheckpoint
 	}
 };
 
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+UCLASS()
 class SUPERTIMECOMMANDO_API UActorHistory : public USceneComponent
 {
 	GENERATED_BODY()
@@ -75,18 +75,20 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Actor History")
 	void PushSpawn();
-	UFUNCTION(BlueprintCallable, Category = "Actor History")
 	void PushDeath();
-	UFUNCTION(BlueprintCallable, Category = "Actor History")
 	void PushCheckpoint();
 
-	UFUNCTION(BlueprintCallable, Category = "Actor History")
-	void PopCheckpoint();
+	template <class ACTION_CLASS>
+	void PopCheckpoint(const ACTION_CLASS& Action)
+	{
+		if (Checkpoints.Num() > 0 && Checkpoints.Top().CheckpointType == Checkpoint)
+		{
+			Action(Checkpoints.Pop());
+		}
+	}
 
 protected:
-	UFUNCTION(BlueprintCallable, Category = "Actor History")
 	void Push(ECheckpointType CheckpointType);
 
 private:
