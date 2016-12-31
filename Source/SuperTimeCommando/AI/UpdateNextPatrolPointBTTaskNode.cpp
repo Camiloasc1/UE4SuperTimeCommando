@@ -2,37 +2,41 @@
 
 #include "SuperTimeCommando.h"
 #include "UpdateNextPatrolPointBTTaskNode.h"
-
 #include "BehaviorTree/BlackboardComponent.h"
-
 #include "EnemyAIController.h"
 #include "EnemyAICharacter.h"
+#include "SuperTimeCommandoGameState.h"
 
 UUpdateNextPatrolPointBTTaskNode::UUpdateNextPatrolPointBTTaskNode()
 {
-	NodeName = "UpdateNextPatrolPoint";
+	NodeName = "Update Next Patrol Point";
 }
 
 FString UUpdateNextPatrolPointBTTaskNode::GetStaticDescription() const
 {
-	return TEXT("Updates the target patrol point");
+	return TEXT("Updates the next target patrol point");
 }
 
 EBTNodeResult::Type UUpdateNextPatrolPointBTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
-
 	AEnemyAIController* AIController = Cast<AEnemyAIController>(OwnerComp.GetAIOwner());
 	AEnemyAICharacter* AIPawn = Cast<AEnemyAICharacter>(AIController->GetPawn());
+	ASuperTimeCommandoGameState* GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
 
 	if (AIPawn->PatrolPoints.Num() == 0)
 	{
 		return EBTNodeResult::Failed;
 	}
 
-	int32 i = Blackboard->GetValueAsInt("TargetIndex");
-	Blackboard->SetValueAsObject("TargetPatrolPoint", AIPawn->PatrolPoints[i]);;
-	Blackboard->SetValueAsInt("TargetIndex", ++i % AIPawn->PatrolPoints.Num());
+	int32 i = Blackboard->GetValueAsInt("NextTargetIndex");
+	Blackboard->SetValueAsObject("TargetPatrolPoint", AIPawn->PatrolPoints[i]);
+
+	// Next patrol point based on the time direction
+	i = (GameState->IsTimeBackward() ? --i : ++i) % AIPawn->PatrolPoints.Num();
+	i += (i < 0 ? AIPawn->PatrolPoints.Num() : 0);
+
+	Blackboard->SetValueAsInt("NextTargetIndex", i);
 
 	return EBTNodeResult::Succeeded;
 }
