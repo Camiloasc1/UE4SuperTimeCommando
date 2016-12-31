@@ -5,23 +5,26 @@
 #include "ProceduralMeshComponent.h"
 #include "LoSObstacle.h"
 #include "Util.h"
+#include "DrawDebugHelpers.h"
 
 
 // Sets default values
-ALoSVisualizer::ALoSVisualizer()
+ULoSVisualizer::ULoSVisualizer()
 {
 	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	Sphere->InitSphereRadius(MaxDistance);
+	Sphere->AttachToComponent(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
 
 	ProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("ProceduralMesh"));
+	ProceduralMesh->CastShadow = false;
+	ProceduralMesh->AttachToComponent(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
 
-	RootComponent = Sphere;
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 // Called when the game starts or when spawned
-void ALoSVisualizer::BeginPlay()
+void ULoSVisualizer::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -29,15 +32,17 @@ void ALoSVisualizer::BeginPlay()
 }
 
 // Called every frame
-void ALoSVisualizer::Tick(float DeltaTime)
+void ULoSVisualizer::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::Tick(DeltaTime);
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	UpdateProceduralMesh();
+	// Fix the rotation error
+	SetRelativeRotation(FRotator(0, -GetOwner()->GetActorRotation().Yaw, 0));
 }
 
 #if WITH_EDITOR
-void ALoSVisualizer::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
+void ULoSVisualizer::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
@@ -46,23 +51,23 @@ void ALoSVisualizer::PostEditChangeProperty(struct FPropertyChangedEvent& Proper
 
 	// We test using GET_MEMBER_NAME_CHECKED so that if someone changes the property name
 	// in the future this will fail to compile and we can update it.
-	if (PropertyName == GET_MEMBER_NAME_CHECKED(ALoSVisualizer, MaxDistance))
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(ULoSVisualizer, MaxDistance))
 	{
 		UpdateSphereRadius();
 	}
 }
 #endif
 
-void ALoSVisualizer::UpdateSphereRadius()
+void ULoSVisualizer::UpdateSphereRadius()
 {
 	Sphere->SetSphereRadius(MaxDistance, true);
 }
 
-void ALoSVisualizer::CalculateCorners(TArray<FVector2D>& OutCorners)
+void ULoSVisualizer::CalculateCorners(TArray<FVector2D>& OutCorners)
 {
-	FVector Forward = GetActorForwardVector();
+	FVector Forward = GetOwner()->GetActorForwardVector();
 	FVector2D Forward2D = FVector2D(Forward.X, Forward.Y);
-	FVector Location = GetActorLocation();
+	FVector Location = GetOwner()->GetActorLocation();
 	FVector2D Location2D = FVector2D(Location.X, Location.Y);
 
 	OutCorners.Empty();
@@ -98,7 +103,7 @@ void ALoSVisualizer::CalculateCorners(TArray<FVector2D>& OutCorners)
 
 	// Add detail steps
 	float angle = -FoV;
-	for (uint8 i = 0; i < Segments; ++i)
+	for (int8 i = 0; i < Segments; ++i)
 	{
 		angle += 2 * FoV / (Segments + 1);
 		OutCorners.Add(Forward2D.GetRotated(angle) * MaxDistance);
@@ -111,10 +116,10 @@ void ALoSVisualizer::CalculateCorners(TArray<FVector2D>& OutCorners)
 		});
 }
 
-void ALoSVisualizer::UpdateProceduralMesh()
+void ULoSVisualizer::UpdateProceduralMesh()
 {
 	TArray<FVector2D> Corners;
-	FVector Location = GetActorLocation();
+	FVector Location = GetOwner()->GetActorLocation();
 
 	CalculateCorners(Corners);
 
@@ -139,7 +144,7 @@ void ALoSVisualizer::UpdateProceduralMesh()
 	}
 
 	TArray<int32> Triangles;
-	for (int16 i = 0; i < Vertices.Num() - 1; ++i)
+	for (int32 i = 0; i < Vertices.Num() - 1; ++i)
 	{
 		Triangles.Add(0);
 		Triangles.Add(i + 2); // In order to get the correct normals put this first

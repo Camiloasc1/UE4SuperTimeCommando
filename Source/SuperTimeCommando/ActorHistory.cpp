@@ -2,6 +2,7 @@
 
 #include "SuperTimeCommando.h"
 #include "ActorHistory.h"
+#include "AIController.h"
 
 // Sets default values for this component's properties
 UActorHistory::UActorHistory()
@@ -18,7 +19,9 @@ void UActorHistory::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	ASuperTimeCommandoGameState* GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
+	GameState->OnTimeBeginBackward.AddDynamic(this, &UActorHistory::OnTimeBeginBackward);
+	GameState->OnTimeEndBackward.AddDynamic(this, &UActorHistory::OnTimeEndBackward);
 }
 
 
@@ -47,10 +50,40 @@ void UActorHistory::PushCheckpoint()
 
 void UActorHistory::Push(ECheckpointType CheckpointType)
 {
-	Checkpoints.Push(FCheckpoint(CheckpointType, GetWorld()->GetTimeSeconds(), GetOwnerPawn()->GetActorLocation()));
+	if (HasOwnerPawn())
+	{
+		Checkpoints.Push(FCheckpoint(CheckpointType, GetWorld()->GetTimeSeconds(), GetOwnerPawn()->GetActorLocation()));
+	}
+}
+
+void UActorHistory::OnTimeBeginBackward()
+{
+}
+
+void UActorHistory::OnTimeEndBackward()
+{
+	float Delta = GetWorld()->GetTimeSeconds() - GetWorld()->GetGameState<ASuperTimeCommandoGameState>()->GetTimePivot();
+	for (auto& Checkpoint : Checkpoints)
+	{
+		Checkpoint.Time += Delta;
+	}
+}
+
+bool UActorHistory::HasOwnerPawn() const
+{
+	return GetOwnerPawn() != nullptr;
 }
 
 APawn* UActorHistory::GetOwnerPawn() const
 {
-	return Cast<APlayerController>(GetOwner())->GetPawn();
+	AActor* Owner = GetOwner();
+	if (Owner->IsA(APlayerController::StaticClass()))
+	{
+		return Cast<APlayerController>(Owner)->GetPawn();
+	}
+	if (Owner->IsA(AAIController::StaticClass()))
+	{
+		return Cast<AAIController>(Owner)->GetPawn();
+	}
+	return nullptr;
 }

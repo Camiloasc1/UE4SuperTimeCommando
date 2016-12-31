@@ -2,19 +2,19 @@
 
 #pragma once
 
-#include "GameFramework/Actor.h"
+#include "Components/SceneComponent.h"
 #include "LoSVisualizer.generated.h"
 
-UCLASS()
-class SUPERTIMECOMMANDO_API ALoSVisualizer : public AActor
+UCLASS(ClassGroup = (SuperTimeCommando), meta = (BlueprintSpawnableComponent))
+class SUPERTIMECOMMANDO_API ULoSVisualizer : public USceneComponent
 {
 	GENERATED_BODY()
 
-public:
-	UPROPERTY(VisibleAnywhere)
+private:
+	UPROPERTY(Category = Visualizer, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* Sphere;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(Category = Visualizer, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UProceduralMeshComponent* ProceduralMesh;
 
 public:
@@ -36,13 +36,13 @@ public:
 
 public:
 	// Sets default values for this actor's properties
-	ALoSVisualizer();
+	ULoSVisualizer();
 
-	// Called when the game starts or when spawned
+	// Called when the game starts
 	virtual void BeginPlay() override;
 
 	// Called every frame
-	virtual void Tick(float DeltaSeconds) override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
@@ -56,5 +56,3 @@ protected:
 	// Set the sphere radius as MaxDistance
 	virtual void UpdateSphereRadius();
 };
-
-class LoSObstacle;

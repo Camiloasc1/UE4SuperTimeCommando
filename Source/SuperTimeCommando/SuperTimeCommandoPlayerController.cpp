@@ -20,6 +20,8 @@ ASuperTimeCommandoPlayerController::ASuperTimeCommandoPlayerController()
 
 void ASuperTimeCommandoPlayerController::BeginPlay()
 {
+	Super::BeginPlay();
+
 	GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
 
 	ActorHistory->PushSpawn();
