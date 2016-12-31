@@ -10,7 +10,7 @@ class SUPERTIMECOMMANDO_API ULoSVisualizer : public USceneComponent
 {
 	GENERATED_BODY()
 
-public:
+private:
 	UPROPERTY(Category = Visualizer, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* Sphere;
 

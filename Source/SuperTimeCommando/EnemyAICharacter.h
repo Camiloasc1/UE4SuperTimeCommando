@@ -10,9 +10,13 @@ class SUPERTIMECOMMANDO_API AEnemyAICharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-public:
+private:
 	UPROPERTY(Category = Visualizer, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class ULoSVisualizer* Visualizer;
+
+public:
+	UPROPERTY(Category = Patrol, EditAnywhere, BlueprintReadWrite)
+	TArray<AActor*> PatrolPoints;
 
 public:
 	// Sets default values for this character's properties
