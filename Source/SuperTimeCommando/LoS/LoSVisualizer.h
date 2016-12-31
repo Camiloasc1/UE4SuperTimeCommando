@@ -34,6 +34,18 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Sight", meta = (ClampMin = 0))
 	int8 Segments;
 
+	// The normal material
+	UPROPERTY(EditAnywhere, Category = "Sight")
+	UMaterial* MaterialNormal;
+
+	// The warning material
+	UPROPERTY(EditAnywhere, Category = "Sight")
+	UMaterial* MaterialWarning;
+
+	// The danger material
+	UPROPERTY(EditAnywhere, Category = "Sight")
+	UMaterial* MaterialDanger;
+
 public:
 	// Sets default values for this actor's properties
 	ULoSVisualizer();
