@@ -11,6 +11,7 @@ class SUPERTIMECOMMANDO_API UUpdateNextPatrolPointBTTaskNode : public UBTTaskNod
 	GENERATED_BODY()
 
 public:
+	UUpdateNextPatrolPointBTTaskNode();
 	FString GetStaticDescription() const override;
 
 protected:

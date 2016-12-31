@@ -8,6 +8,10 @@
 #include "EnemyAIController.h"
 #include "EnemyAICharacter.h"
 
+UUpdateNextPatrolPointBTTaskNode::UUpdateNextPatrolPointBTTaskNode()
+{
+	NodeName = "UpdateNextPatrolPoint";
+}
 
 FString UUpdateNextPatrolPointBTTaskNode::GetStaticDescription() const
 {
