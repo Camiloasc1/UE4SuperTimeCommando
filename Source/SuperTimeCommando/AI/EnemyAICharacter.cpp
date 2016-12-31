@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SuperTimeCommando.h"
-#include "LoSVisualizer.h"
+#include "LoS/LoSVisualizer.h"
 #include "EnemyAICharacter.h"
 
 
@@ -21,6 +21,11 @@ void AEnemyAICharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// Move to first patrol point
+	if(PatrolPoints.Num() > 0)
+	{
+		SetActorLocation(PatrolPoints[0]->GetActorLocation());
+	}
 }
 
 // Called every frame

@@ -4,7 +4,7 @@
 #include "LoSVisualizer.h"
 #include "ProceduralMeshComponent.h"
 #include "LoSObstacle.h"
-#include "Util.h"
+#include "Util/Util.h"
 #include "DrawDebugHelpers.h"
 
 
