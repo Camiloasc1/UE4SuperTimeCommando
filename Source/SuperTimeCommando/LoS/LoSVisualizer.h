@@ -5,6 +5,14 @@
 #include "Components/SceneComponent.h"
 #include "LoSVisualizer.generated.h"
 
+UENUM()
+enum LoSVisualizerState
+{
+	Normal,
+	Warning,
+	Danger,
+};
+
 UCLASS(ClassGroup = (SuperTimeCommando), meta = (BlueprintSpawnableComponent))
 class SUPERTIMECOMMANDO_API ULoSVisualizer : public USceneComponent
 {
@@ -59,6 +67,9 @@ public:
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
+
+public:
+	void SetState(LoSVisualizerState State);
 
 protected:
 	//  Calculate the corners for the sight cone

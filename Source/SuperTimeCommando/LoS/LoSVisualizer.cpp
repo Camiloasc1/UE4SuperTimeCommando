@@ -5,7 +5,6 @@
 #include "ProceduralMeshComponent.h"
 #include "LoSObstacle.h"
 #include "Util/Util.h"
-#include "DrawDebugHelpers.h"
 
 
 // Sets default values
@@ -29,6 +28,7 @@ void ULoSVisualizer::BeginPlay()
 	Super::BeginPlay();
 
 	UpdateSphereRadius();
+	SetState(Normal);
 }
 
 // Called every frame
@@ -57,6 +57,28 @@ void ULoSVisualizer::PostEditChangeProperty(struct FPropertyChangedEvent& Proper
 	}
 }
 #endif
+
+void ULoSVisualizer::SetState(LoSVisualizerState State)
+{
+	switch (State)
+	{
+		case Normal:
+		{
+			ProceduralMesh->SetMaterial(0, MaterialNormal);
+			break;
+		}
+		case Warning:
+		{
+			ProceduralMesh->SetMaterial(0, MaterialWarning);
+			break;
+		}
+		case Danger:
+		{
+			ProceduralMesh->SetMaterial(0, MaterialDanger);
+			break;
+		}
+	}
+}
 
 void ULoSVisualizer::UpdateSphereRadius()
 {
