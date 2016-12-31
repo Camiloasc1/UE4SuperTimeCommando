@@ -11,9 +11,8 @@ AEnemyAICharacter::AEnemyAICharacter()
 	Visualizer = CreateDefaultSubobject<ULoSVisualizer>(TEXT("Visualizer"));
 	Visualizer->SetupAttachment(RootComponent);
 
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 #if WITH_EDITOR
@@ -33,25 +32,22 @@ void AEnemyAICharacter::PostEditChangeChainProperty(struct FPropertyChangedChain
 void AEnemyAICharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	// Move to first patrol point
-	if(PatrolPoints.Num() > 0)
+	if (PatrolPoints.Num() > 0)
 	{
 		SetActorLocation(PatrolPoints[0]->GetActorLocation());
 	}
 }
 
 // Called every frame
-void AEnemyAICharacter::Tick( float DeltaTime )
+void AEnemyAICharacter::Tick(float DeltaTime)
 {
-	Super::Tick( DeltaTime );
-
+	Super::Tick(DeltaTime);
 }
 
 // Called to bind functionality to input
 void AEnemyAICharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
-
