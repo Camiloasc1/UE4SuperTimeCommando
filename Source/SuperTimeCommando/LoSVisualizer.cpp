@@ -5,6 +5,7 @@
 #include "ProceduralMeshComponent.h"
 #include "LoSObstacle.h"
 #include "Util.h"
+#include "DrawDebugHelpers.h"
 
 
 // Sets default values
@@ -36,6 +37,8 @@ void ULoSVisualizer::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	UpdateProceduralMesh();
+	// Fix the rotation error
+	SetRelativeRotation(FRotator(0, -GetOwner()->GetActorRotation().Yaw, 0));
 }
 
 #if WITH_EDITOR
@@ -66,6 +69,11 @@ void ULoSVisualizer::CalculateCorners(TArray<FVector2D>& OutCorners)
 	FVector2D Forward2D = FVector2D(Forward.X, Forward.Y);
 	FVector Location = GetOwner()->GetActorLocation();
 	FVector2D Location2D = FVector2D(Location.X, Location.Y);
+
+	if (bDrawDebug)
+	{
+		DrawDebugLine(GetWorld(), Location, Location + Forward * 100, FColor(255, 0, 0), false, -1, 0, 16);
+	}
 
 	OutCorners.Empty();
 	TArray<AActor*> OverlappingActors;
@@ -100,7 +108,7 @@ void ULoSVisualizer::CalculateCorners(TArray<FVector2D>& OutCorners)
 
 	// Add detail steps
 	float angle = -FoV;
-	for (uint8 i = 0; i < Segments; ++i)
+	for (int8 i = 0; i < Segments; ++i)
 	{
 		angle += 2 * FoV / (Segments + 1);
 		OutCorners.Add(Forward2D.GetRotated(angle) * MaxDistance);
@@ -138,10 +146,21 @@ void ULoSVisualizer::UpdateProceduralMesh()
 		{
 			Vertices.Add(V);
 		}
+		if (bDrawDebug)
+		{
+			DrawDebugLine(GetWorld(), Location, Location + V, FColor(0, 255, 0), false, -1, 0, 8);
+		}
+	}
+	if (bDrawDebug)
+	{
+		for (int32 i = 0; i < Vertices.Num() - 1; ++i)
+		{
+			DrawDebugPoint(GetWorld(), Location + Vertices[i], 16, FColor(0, 0, 255));
+		}
 	}
 
 	TArray<int32> Triangles;
-	for (int16 i = 0; i < Vertices.Num() - 1; ++i)
+	for (int32 i = 0; i < Vertices.Num() - 1; ++i)
 	{
 		Triangles.Add(0);
 		Triangles.Add(i + 2); // In order to get the correct normals put this first

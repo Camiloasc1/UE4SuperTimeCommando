@@ -34,6 +34,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Sight", meta = (ClampMin = 0))
 	int8 Segments;
 
+	// Draw debug lines and points (Shows the rotation error)
+	UPROPERTY(EditAnywhere, Category = "Sight")
+	bool bDrawDebug;
+
 public:
 	// Sets default values for this actor's properties
 	ULoSVisualizer();
