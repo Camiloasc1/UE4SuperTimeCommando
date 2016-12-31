@@ -16,6 +16,19 @@ AEnemyAICharacter::AEnemyAICharacter()
 
 }
 
+#if WITH_EDITOR
+void AEnemyAICharacter::PostEditChangeChainProperty(struct FPropertyChangedChainEvent& PropertyChangedChainEvent)
+{
+	Super::PostEditChangeChainProperty(PropertyChangedChainEvent);
+
+	int32 i = PropertyChangedChainEvent.GetArrayIndex(TEXT("PatrolPoints"));
+	if (i == 0)
+	{
+		SetActorLocation(PatrolPoints[0]->GetActorLocation());
+	}
+}
+#endif
+
 // Called when the game starts or when spawned
 void AEnemyAICharacter::BeginPlay()
 {

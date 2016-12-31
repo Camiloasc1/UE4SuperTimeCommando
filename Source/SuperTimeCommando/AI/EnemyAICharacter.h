@@ -22,6 +22,10 @@ public:
 	// Sets default values for this character's properties
 	AEnemyAICharacter();
 
+#if WITH_EDITOR
+	void PostEditChangeChainProperty(struct FPropertyChangedChainEvent& PropertyChangedChainEvent);
+#endif
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
