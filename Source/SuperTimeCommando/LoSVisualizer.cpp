@@ -70,11 +70,6 @@ void ULoSVisualizer::CalculateCorners(TArray<FVector2D>& OutCorners)
 	FVector Location = GetOwner()->GetActorLocation();
 	FVector2D Location2D = FVector2D(Location.X, Location.Y);
 
-	if (bDrawDebug)
-	{
-		DrawDebugLine(GetWorld(), Location, Location + Forward * 100, FColor(255, 0, 0), false, -1, 0, 16);
-	}
-
 	OutCorners.Empty();
 	TArray<AActor*> OverlappingActors;
 	Sphere->GetOverlappingActors(OverlappingActors, ALoSObstacle::StaticClass());
@@ -145,17 +140,6 @@ void ULoSVisualizer::UpdateProceduralMesh()
 		else
 		{
 			Vertices.Add(V);
-		}
-		if (bDrawDebug)
-		{
-			DrawDebugLine(GetWorld(), Location, Location + V, FColor(0, 255, 0), false, -1, 0, 8);
-		}
-	}
-	if (bDrawDebug)
-	{
-		for (int32 i = 0; i < Vertices.Num() - 1; ++i)
-		{
-			DrawDebugPoint(GetWorld(), Location + Vertices[i], 16, FColor(0, 0, 255));
 		}
 	}
 

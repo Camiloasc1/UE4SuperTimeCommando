@@ -6,6 +6,6 @@ public class SuperTimeCommando : ModuleRules
 {
 	public SuperTimeCommando(TargetInfo Target)
 	{
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "ProceduralMeshComponent" });
-	}
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "ProceduralMeshComponent", "AIModule", "GameplayTasks" });
+    }
 }
