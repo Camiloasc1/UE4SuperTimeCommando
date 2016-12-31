@@ -22,21 +22,20 @@ EBTNodeResult::Type UUpdateNextPatrolPointBTTaskNode::ExecuteTask(UBehaviorTreeC
 	UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
 	AEnemyAIController* AIController = Cast<AEnemyAIController>(OwnerComp.GetAIOwner());
 	AEnemyAICharacter* AIPawn = Cast<AEnemyAICharacter>(AIController->GetPawn());
-	ASuperTimeCommandoGameState* GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
 
 	if (AIPawn->PatrolPoints.Num() == 0)
 	{
 		return EBTNodeResult::Failed;
 	}
 
-	int32 i = Blackboard->GetValueAsInt("NextTargetIndex");
-	Blackboard->SetValueAsObject("TargetPatrolPoint", AIPawn->PatrolPoints[i]);
+	int32 i = Blackboard->GetValueAsInt("TargetIndex");
 
 	// Next patrol point based on the time direction
-	i = (GameState->IsTimeBackward() ? --i : ++i) % AIPawn->PatrolPoints.Num();
+	i = (Blackboard->GetValueAsBool("IsTimeBackward") ? --i : ++i) % AIPawn->PatrolPoints.Num();
 	i += (i < 0 ? AIPawn->PatrolPoints.Num() : 0);
 
-	Blackboard->SetValueAsInt("NextTargetIndex", i);
+	Blackboard->SetValueAsObject("TargetPatrolPoint", AIPawn->PatrolPoints[i]);
+	Blackboard->SetValueAsInt("TargetIndex", i);
 
 	return EBTNodeResult::Succeeded;
 }
