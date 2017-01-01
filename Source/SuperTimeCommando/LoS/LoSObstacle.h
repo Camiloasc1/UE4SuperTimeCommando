@@ -11,32 +11,9 @@ class SUPERTIMECOMMANDO_API ALoSObstacle : public AActor
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	class UStaticMeshComponent* Mesh;
-
-protected:
-	// The corners of the actor
-	// If empty the corners will be automatically calculated based on the actor's bounds
-	UPROPERTY(EditAnywhere, Category = "Obstacle")
-	TArray<FVector2D> Corners;
-
-public:
-	// Sets default values for this actor's properties
 	ALoSObstacle();
 
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	// Called every frame
-	virtual void Tick(float DeltaSeconds) override;
-
 public:
-	// Calculates the corners based on the actor's bounds
-	virtual void UpdateCorners();
-
-	// Get the corners
-	FORCEINLINE const TArray<FVector2D>& GetCorners() const
-	{
-		return Corners;
-	}
+	// Get the corners based on the actor's bounds
+	TArray<FVector2D> GetCorners() const;
 };
