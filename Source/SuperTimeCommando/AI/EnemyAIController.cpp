@@ -2,7 +2,10 @@
 
 #include "SuperTimeCommando.h"
 #include "EnemyAIController.h"
+#include "../ActorHistory.h"
 
-
-
-
+AEnemyAIController::AEnemyAIController()
+{
+	ActorHistory = CreateDefaultSubobject<UActorHistory>(TEXT("ActorHistory"));
+	ActorHistory->SetupAttachment(RootComponent);
+}
