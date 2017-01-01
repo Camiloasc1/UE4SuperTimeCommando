@@ -5,7 +5,6 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "EnemyAIController.h"
 #include "EnemyAICharacter.h"
-#include "SuperTimeCommandoGameState.h"
 
 UUpdateNextPatrolPointBTTaskNode::UUpdateNextPatrolPointBTTaskNode()
 {
