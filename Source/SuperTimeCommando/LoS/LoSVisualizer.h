@@ -35,24 +35,32 @@ public:
 	float MaxDistance;
 
 	// The delta for detailed corners
-	UPROPERTY(EditAnywhere, Category = "Sight",meta = (ClampMin = 0.1, ClampMax = 180))
+	UPROPERTY(EditAnywhere, Category = "Visualizer",meta = (ClampMin = 0.1, ClampMax = 180))
 	float Delta;
 
 	// The number of segments used to give more detail to the sight cone
-	UPROPERTY(EditAnywhere, Category = "Sight", meta = (ClampMin = 0))
+	UPROPERTY(EditAnywhere, Category = "Visualizer", meta = (ClampMin = 0))
 	int8 Segments;
 
 	// The normal material
-	UPROPERTY(EditAnywhere, Category = "Sight")
+	UPROPERTY(EditAnywhere, Category = "Visualizer")
 	UMaterial* MaterialNormal;
 
 	// The warning material
-	UPROPERTY(EditAnywhere, Category = "Sight")
+	UPROPERTY(EditAnywhere, Category = "Visualizer")
 	UMaterial* MaterialWarning;
 
 	// The danger material
-	UPROPERTY(EditAnywhere, Category = "Sight")
+	UPROPERTY(EditAnywhere, Category = "Visualizer")
 	UMaterial* MaterialDanger;
+
+	// The projectile
+	UPROPERTY(EditAnywhere, Category = "Projectile")
+	TSubclassOf<class AProjectile> Projectile;
+
+	// The cooldown
+	UPROPERTY(EditAnywhere, Category = "Projectile")
+	float Cooldown;
 
 public:
 	// Sets default values for this actor's properties
@@ -78,4 +86,11 @@ protected:
 	virtual void UpdateProceduralMesh();
 	// Set the sphere radius as MaxDistance
 	virtual void UpdateSphereRadius();
+	// Check if player in range and shot
+	virtual void TryShot();
+	// Shot a projectile to the target position
+	virtual void Shot(FVector Target);
+
+private:
+	float LastShot;
 };

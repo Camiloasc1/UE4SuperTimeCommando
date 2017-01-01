@@ -5,6 +5,8 @@
 #include "ProceduralMeshComponent.h"
 #include "LoSObstacle.h"
 #include "Util/Util.h"
+#include "Projectile.h"
+#include "SuperTimeCommandoCharacter.h"
 
 
 // Sets default values
@@ -29,6 +31,8 @@ void ULoSVisualizer::BeginPlay()
 
 	UpdateSphereRadius();
 	SetState(Normal);
+
+	LastShot = GetWorld()->GetTimeSeconds();
 }
 
 // Called every frame
@@ -37,8 +41,12 @@ void ULoSVisualizer::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	UpdateProceduralMesh();
+
 	// Fix the rotation error
 	SetRelativeRotation(FRotator(0, -GetOwner()->GetActorRotation().Yaw, 0));
+
+	// Shot if player in range
+	TryShot();
 }
 
 #if WITH_EDITOR
@@ -186,4 +194,55 @@ void ULoSVisualizer::UpdateProceduralMesh()
 	Tangents.Init(FProcMeshTangent(), Vertices.Num());
 
 	ProceduralMesh->CreateMeshSection(0, Vertices, Triangles, Normals, UV0, VertexColors, Tangents, false);
+}
+
+void ULoSVisualizer::TryShot()
+{
+	if (LastShot + Cooldown > GetWorld()->GetTimeSeconds())
+	{
+		return;
+	}
+
+	FVector Forward = GetOwner()->GetActorForwardVector();
+	FVector2D Forward2D = FVector2D(Forward.X, Forward.Y);
+	FVector Location = GetOwner()->GetActorLocation();
+	FVector2D Location2D = FVector2D(Location.X, Location.Y);
+
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASuperTimeCommandoCharacter::StaticClass(), FoundActors);
+	for (const auto& Actor : FoundActors)
+	{
+		FVector Target = Actor->GetActorLocation();
+		FVector2D Target2D = FVector2D(Target.X, Target.Y);
+
+		// Is near?
+		FVector2D ToPlayer = Target2D - Location2D;
+		if (ToPlayer.Size() > MaxDistance)
+		{
+			continue;
+		}
+
+		// Is in the field of view?
+		if (GUtil::Angle2D(Forward2D, ToPlayer) > FoV)
+		{
+			continue;
+		}
+
+		// Can see the player?
+		FHitResult HitResult(ForceInit);
+		FCollisionQueryParams CollisionQueryParams = FCollisionQueryParams();
+		if (GetWorld()->LineTraceSingleByChannel(HitResult, Location, Target, ECC_Visibility, CollisionQueryParams))
+		{
+			continue;
+		}
+		Shot(Target);
+	}
+}
+
+void ULoSVisualizer::Shot(FVector Target)
+{
+	UWorld* World = GetWorld();
+	AProjectile* CreatedProjectile = World->SpawnActor<AProjectile>(Projectile, GetOwner()->GetActorLocation(), FRotator(0, 0, 0), FActorSpawnParameters());
+	CreatedProjectile->Target = Target;
+	LastShot = GetWorld()->GetTimeSeconds();
 }

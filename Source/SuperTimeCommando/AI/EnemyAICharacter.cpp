@@ -21,9 +21,9 @@ void AEnemyAICharacter::PostEditChangeChainProperty(struct FPropertyChangedChain
 	Super::PostEditChangeChainProperty(PropertyChangedChainEvent);
 
 	int32 i = PropertyChangedChainEvent.GetArrayIndex(TEXT("PatrolPoints"));
-	if (i == 0)
+	if (i == 0 && PatrolPoints[0] != nullptr)
 	{
-		SetActorLocation(PatrolPoints[0]->GetActorLocation());
+		SetActorLocation(PatrolPoints[0]->GetActorLocation() + FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));
 	}
 }
 #endif
@@ -34,9 +34,9 @@ void AEnemyAICharacter::BeginPlay()
 	Super::BeginPlay();
 
 	// Move to first patrol point
-	if (PatrolPoints.Num() > 0)
+	if (PatrolPoints.Num() > 0 && PatrolPoints[0] != nullptr)
 	{
-		SetActorLocation(PatrolPoints[0]->GetActorLocation());
+		SetActorLocation(PatrolPoints[0]->GetActorLocation() + FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));
 	}
 }
 
