@@ -17,6 +17,8 @@ FString UPushCheckpointBTService::GetStaticDescription() const
 
 void UPushCheckpointBTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
+	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
+
 	AEnemyAIController* AIController = Cast<AEnemyAIController>(OwnerComp.GetAIOwner());
 
 	AIController->GetActorHistory()->PushCheckpoint();
