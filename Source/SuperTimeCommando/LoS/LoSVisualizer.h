@@ -77,7 +77,7 @@ public:
 #endif
 
 public:
-	void SetState(LoSVisualizerState State);
+	void SetState(LoSVisualizerState NewState);
 
 protected:
 	//  Calculate the corners for the sight cone
@@ -92,5 +92,6 @@ protected:
 	virtual void Shot(FVector Target);
 
 private:
+	LoSVisualizerState State;
 	float LastShot;
 };

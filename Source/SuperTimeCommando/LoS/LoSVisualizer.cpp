@@ -66,8 +66,9 @@ void ULoSVisualizer::PostEditChangeProperty(struct FPropertyChangedEvent& Proper
 }
 #endif
 
-void ULoSVisualizer::SetState(LoSVisualizerState State)
+void ULoSVisualizer::SetState(LoSVisualizerState NewState)
 {
+	State = NewState;
 	switch (State)
 	{
 		case Normal:
@@ -198,11 +199,6 @@ void ULoSVisualizer::UpdateProceduralMesh()
 
 void ULoSVisualizer::TryShot()
 {
-	if (LastShot + Cooldown > GetWorld()->GetTimeSeconds())
-	{
-		return;
-	}
-
 	FVector Forward = GetOwner()->GetActorForwardVector();
 	FVector2D Forward2D = FVector2D(Forward.X, Forward.Y);
 	FVector Location = GetOwner()->GetActorLocation();
@@ -219,12 +215,14 @@ void ULoSVisualizer::TryShot()
 		FVector2D ToPlayer = Target2D - Location2D;
 		if (ToPlayer.Size() > MaxDistance)
 		{
+			SetState(Normal);
 			continue;
 		}
 
 		// Is in the field of view?
 		if (GUtil::Angle2D(Forward2D, ToPlayer) > FoV)
 		{
+			SetState(Normal);
 			continue;
 		}
 
@@ -233,7 +231,20 @@ void ULoSVisualizer::TryShot()
 		FCollisionQueryParams CollisionQueryParams = FCollisionQueryParams();
 		if (GetWorld()->LineTraceSingleByChannel(HitResult, Location, Target, ECC_Visibility, CollisionQueryParams))
 		{
+			SetState(Normal);
 			continue;
+		}
+
+		// Start warning
+		if (State == Normal)
+		{
+			SetState(Warning);
+			LastShot = GetWorld()->GetTimeSeconds();
+		}
+
+		if (LastShot + Cooldown > GetWorld()->GetTimeSeconds())
+		{
+			return;
 		}
 		Shot(Target);
 	}
@@ -244,5 +255,6 @@ void ULoSVisualizer::Shot(FVector Target)
 	UWorld* World = GetWorld();
 	AProjectile* CreatedProjectile = World->SpawnActor<AProjectile>(Projectile, GetOwner()->GetActorLocation(), FRotator(0, 0, 0), FActorSpawnParameters());
 	CreatedProjectile->Target = Target;
+	SetState(Danger);
 	LastShot = GetWorld()->GetTimeSeconds();
 }
