@@ -9,3 +9,10 @@ AEnemyAIController::AEnemyAIController()
 	ActorHistory = CreateDefaultSubobject<UActorHistory>(TEXT("ActorHistory"));
 	ActorHistory->SetupAttachment(RootComponent);
 }
+
+void AEnemyAIController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	ActorHistory->PushSpawn();
+}

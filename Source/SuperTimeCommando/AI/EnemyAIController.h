@@ -22,4 +22,6 @@ public:
 
 public:
 	AEnemyAIController();
+
+	virtual void BeginPlay() override;
 };
