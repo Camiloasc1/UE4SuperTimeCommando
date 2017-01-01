@@ -18,6 +18,8 @@ FString UUpdateNextPatrolPointBTTaskNode::GetStaticDescription() const
 
 EBTNodeResult::Type UUpdateNextPatrolPointBTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	Super::ExecuteTask(OwnerComp, NodeMemory);
+
 	UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
 	AEnemyAIController* AIController = Cast<AEnemyAIController>(OwnerComp.GetAIOwner());
 	AEnemyAICharacter* AIPawn = Cast<AEnemyAICharacter>(AIController->GetPawn());
@@ -29,9 +31,8 @@ EBTNodeResult::Type UUpdateNextPatrolPointBTTaskNode::ExecuteTask(UBehaviorTreeC
 
 	int32 i = Blackboard->GetValueAsInt("TargetIndex");
 
-	// Next patrol point based on the time direction
-	i = (Blackboard->GetValueAsBool("IsTimeBackward") ? --i : ++i) % AIPawn->PatrolPoints.Num();
-	i += (i < 0 ? AIPawn->PatrolPoints.Num() : 0);
+	// Next patrol point
+	i = ++i % AIPawn->PatrolPoints.Num();
 
 	Blackboard->SetValueAsObject("TargetPatrolPoint", AIPawn->PatrolPoints[i]);
 	Blackboard->SetValueAsInt("TargetIndex", i);

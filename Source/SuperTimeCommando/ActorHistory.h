@@ -19,20 +19,23 @@ struct FCheckpoint
 {
 	GENERATED_BODY()
 
-		ECheckpointType CheckpointType;
+	ECheckpointType CheckpointType;
 
 	float Time;
 
-	FVector Location;
+	FTransform Transform;
+
+	int32 PatrolTarget;
 
 	FORCEINLINE FCheckpoint()
 	{
 	}
 
-	FORCEINLINE FCheckpoint(ECheckpointType CheckpointType, float Time, const FVector& Location)
+	FCheckpoint(ECheckpointType CheckpointType, float Time, const FTransform& Transform, int32 PatrolTarget)
 		: CheckpointType(CheckpointType),
 		  Time(Time),
-		  Location(Location)
+		  Transform(Transform),
+		  PatrolTarget(PatrolTarget)
 	{
 	}
 
@@ -67,25 +70,22 @@ protected:
 	TArray<FCheckpoint> Checkpoints;
 
 public:
-	// Sets default values for this component's properties
 	UActorHistory();
 
-	// Called when the game starts
 	virtual void BeginPlay() override;
-
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
 	void PushSpawn();
 	void PushDeath();
 	void PushCheckpoint();
+	void PushCheckpoint(int32 PatrolIndex);
 
 	template <class ACTION_CLASS>
 	void PopCheckpoint(const ACTION_CLASS& Action);
 
 protected:
 	void Push(ECheckpointType CheckpointType);
+	void Push(ECheckpointType CheckpointType, int32 PatrolIndex);
 
 	UFUNCTION()
 	void OnTimeBeginBackward();
@@ -93,7 +93,6 @@ protected:
 	void OnTimeEndBackward();
 
 private:
-	bool HasOwnerPawn() const;
 	APawn* GetOwnerPawn() const;
 };
 

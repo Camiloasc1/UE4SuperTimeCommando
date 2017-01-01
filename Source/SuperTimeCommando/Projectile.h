@@ -13,8 +13,6 @@ class SUPERTIMECOMMANDO_API AProjectile : public AActor
 private:
 	UPROPERTY(Category = Projectile, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* Sphere;
-	UPROPERTY(Category = Projectile, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class UActorHistory* ActorHistory;
 
 public:
 	UPROPERTY()
@@ -30,11 +28,17 @@ public:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 	// Called every frame
 	virtual void Tick(float DeltaSeconds) override;
 
 public:
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+private:
+	void Respawn();
+	void Die();
+
+private:
+	float DeathTime;
 };

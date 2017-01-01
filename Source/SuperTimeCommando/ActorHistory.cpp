@@ -7,11 +7,6 @@
 // Sets default values for this component's properties
 UActorHistory::UActorHistory()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
 // Called when the game starts
@@ -22,15 +17,6 @@ void UActorHistory::BeginPlay()
 	ASuperTimeCommandoGameState* GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
 	GameState->OnTimeBeginBackward.AddDynamic(this, &UActorHistory::OnTimeBeginBackward);
 	GameState->OnTimeEndBackward.AddDynamic(this, &UActorHistory::OnTimeEndBackward);
-}
-
-
-// Called every frame
-void UActorHistory::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
 void UActorHistory::PushSpawn()
@@ -48,11 +34,22 @@ void UActorHistory::PushCheckpoint()
 	Push(Checkpoint);
 }
 
+void UActorHistory::PushCheckpoint(int32 PatrolIndex)
+{
+	Push(Checkpoint, PatrolIndex);
+}
+
 void UActorHistory::Push(ECheckpointType CheckpointType)
 {
-	if (HasOwnerPawn())
+	Push(CheckpointType, 0);
+}
+
+void UActorHistory::Push(ECheckpointType CheckpointType, int32 PatrolIndex)
+{
+	APawn* OwnerPawn = GetOwnerPawn();
+	if (OwnerPawn != nullptr)
 	{
-		Checkpoints.Push(FCheckpoint(CheckpointType, GetWorld()->GetTimeSeconds(), GetOwnerPawn()->GetActorLocation()));
+		Checkpoints.Push(FCheckpoint(CheckpointType, GetWorld()->GetTimeSeconds(), OwnerPawn->GetActorTransform(), PatrolIndex));
 	}
 }
 
@@ -69,21 +66,12 @@ void UActorHistory::OnTimeEndBackward()
 	}
 }
 
-bool UActorHistory::HasOwnerPawn() const
-{
-	return GetOwnerPawn() != nullptr;
-}
-
 APawn* UActorHistory::GetOwnerPawn() const
 {
 	AActor* Owner = GetOwner();
-	if (Owner->IsA(APlayerController::StaticClass()))
+	if (Owner->IsA(AController::StaticClass()))
 	{
-		return Cast<APlayerController>(Owner)->GetPawn();
-	}
-	if (Owner->IsA(AAIController::StaticClass()))
-	{
-		return Cast<AAIController>(Owner)->GetPawn();
+		return Cast<AController>(Owner)->GetPawn();
 	}
 	return nullptr;
 }
