@@ -36,7 +36,7 @@ void ASuperTimeCommandoPlayerController::PlayerTick(float DeltaTime)
 	{
 		ActorHistory->PopCheckpoint([&](const FCheckpoint& Checkpoint)
 			{
-				GetPawn()->SetActorLocation(Checkpoint.Location);
+				GetPawn()->SetActorTransform(Checkpoint.Transform);
 			});
 	}
 	else

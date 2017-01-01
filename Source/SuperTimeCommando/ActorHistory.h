@@ -19,20 +19,20 @@ struct FCheckpoint
 {
 	GENERATED_BODY()
 
-		ECheckpointType CheckpointType;
+	ECheckpointType CheckpointType;
 
 	float Time;
 
-	FVector Location;
+	FTransform Transform;
 
 	FORCEINLINE FCheckpoint()
 	{
 	}
 
-	FORCEINLINE FCheckpoint(ECheckpointType CheckpointType, float Time, const FVector& Location)
+	FORCEINLINE FCheckpoint(ECheckpointType CheckpointType, float Time, const FTransform& Transform)
 		: CheckpointType(CheckpointType),
 		  Time(Time),
-		  Location(Location)
+		  Transform(Transform)
 	{
 	}
 

@@ -25,7 +25,7 @@ EBTNodeResult::Type UPopCheckpointBTTaskNode::ExecuteTask(UBehaviorTreeComponent
 
 	AIController->GetActorHistory()->PopCheckpoint([&](const FCheckpoint& Checkpoint)
 		            {
-			            AIPawn->SetActorLocation(Checkpoint.Location);
+			            AIPawn->SetActorTransform(Checkpoint.Transform);
 		            });
 
 	return EBTNodeResult::Succeeded;

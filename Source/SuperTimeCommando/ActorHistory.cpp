@@ -53,7 +53,7 @@ void UActorHistory::Push(ECheckpointType CheckpointType)
 	APawn* OwnerPawn = GetOwnerPawn();
 	if (OwnerPawn != nullptr)
 	{
-		Checkpoints.Push(FCheckpoint(CheckpointType, GetWorld()->GetTimeSeconds(), OwnerPawn->GetActorLocation()));
+		Checkpoints.Push(FCheckpoint(CheckpointType, GetWorld()->GetTimeSeconds(), OwnerPawn->GetActorTransform()));
 	}
 }
 
