@@ -7,6 +7,7 @@
 #include "Util/Util.h"
 #include "Projectile.h"
 #include "SuperTimeCommandoCharacter.h"
+#include "SuperTimeCommandoGameState.h"
 
 
 // Sets default values
@@ -30,6 +31,7 @@ void ULoSVisualizer::BeginPlay()
 	Super::BeginPlay();
 
 	UpdateSphereRadius();
+
 	SetState(Normal);
 
 	LastShot = GetWorld()->GetTimeSeconds();
@@ -42,11 +44,18 @@ void ULoSVisualizer::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	UpdateProceduralMesh();
 
-	// Fix the rotation error
-	SetRelativeRotation(FRotator(0, -GetOwner()->GetActorRotation().Yaw, 0));
+	if (GetWorld()->GetGameState<ASuperTimeCommandoGameState>()->IsTimeBackward())
+	{
+		SetState(Warning);
+	}
+	else
+	{
+		// Fix the rotation error
+		SetRelativeRotation(FRotator(0, -GetOwner()->GetActorRotation().Yaw, 0));
 
-	// Shot if player in range
-	TryShot();
+		// Check if player in range and shot
+		TryShot();
+	}
 }
 
 #if WITH_EDITOR
