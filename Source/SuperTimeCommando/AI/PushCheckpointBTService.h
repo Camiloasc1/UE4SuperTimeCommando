@@ -5,9 +5,6 @@
 #include "BehaviorTree/BTService.h"
 #include "PushCheckpointBTService.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class SUPERTIMECOMMANDO_API UPushCheckpointBTService : public UBTService
 {
@@ -16,8 +13,8 @@ class SUPERTIMECOMMANDO_API UPushCheckpointBTService : public UBTService
 public:
 	UPushCheckpointBTService();
 
-	FString GetStaticDescription() const override;
+	virtual FString GetStaticDescription() const override;
 
 protected:
-	void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 };

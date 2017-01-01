@@ -18,6 +18,8 @@ FString UPopCheckpointBTTaskNode::GetStaticDescription() const
 
 EBTNodeResult::Type UPopCheckpointBTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	Super::ExecuteTask(OwnerComp, NodeMemory);
+
 	AEnemyAIController* AIController = Cast<AEnemyAIController>(OwnerComp.GetAIOwner());
 	AEnemyAICharacter* AIPawn = Cast<AEnemyAICharacter>(AIController->GetPawn());
 

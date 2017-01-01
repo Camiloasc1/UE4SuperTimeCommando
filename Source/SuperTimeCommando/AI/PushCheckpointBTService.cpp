@@ -22,6 +22,4 @@ void UPushCheckpointBTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 	AEnemyAIController* AIController = Cast<AEnemyAIController>(OwnerComp.GetAIOwner());
 
 	AIController->GetActorHistory()->PushCheckpoint();
-
-	UE_LOG(LogTemp, Warning, TEXT("Delta: %f"), DeltaSeconds);
 }
