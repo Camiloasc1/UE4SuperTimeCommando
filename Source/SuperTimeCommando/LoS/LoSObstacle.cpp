@@ -5,40 +5,24 @@
 
 
 // Sets default values
-ALoSObstacle::ALoSObstacle()
+ULoSObstacle::ULoSObstacle()
 {
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	RootComponent = Mesh;
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-}
-
-// Called when the game starts or when spawned
-void ALoSObstacle::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (Corners.Num() == 0)
-	{
-		UpdateCorners();
-	}
-}
-
-// Called every frame
-void ALoSObstacle::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
 // Calculates the corners based on the actor's bounds
-void ALoSObstacle::UpdateCorners()
+TArray<FVector2D> ULoSObstacle::GetCorners() const
 {
+	TArray<FVector2D> Corners;
+
 	FVector Orgin;
 	FVector BoxExtent;
-	GetActorBounds(false, Orgin, BoxExtent);
+	GetOwner()->GetActorBounds(false, Orgin, BoxExtent);
+
 	Corners.Empty();
 	Corners.Add(FVector2D(Orgin.X + BoxExtent.X, Orgin.Y + BoxExtent.Y));
 	Corners.Add(FVector2D(Orgin.X + BoxExtent.X, Orgin.Y - BoxExtent.Y));
 	Corners.Add(FVector2D(Orgin.X - BoxExtent.X, Orgin.Y + BoxExtent.Y));
 	Corners.Add(FVector2D(Orgin.X - BoxExtent.X, Orgin.Y - BoxExtent.Y));
+
+	return Corners;
 }
