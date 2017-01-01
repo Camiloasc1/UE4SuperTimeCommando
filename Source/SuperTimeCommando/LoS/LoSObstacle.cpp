@@ -5,18 +5,18 @@
 
 
 // Sets default values
-ULoSObstacle::ULoSObstacle()
+ALoSObstacle::ALoSObstacle()
 {
 }
 
 // Calculates the corners based on the actor's bounds
-TArray<FVector2D> ULoSObstacle::GetCorners() const
+TArray<FVector2D> ALoSObstacle::GetCorners() const
 {
 	TArray<FVector2D> Corners;
 
 	FVector Orgin;
 	FVector BoxExtent;
-	GetOwner()->GetActorBounds(false, Orgin, BoxExtent);
+	GetActorBounds(false, Orgin, BoxExtent);
 
 	Corners.Empty();
 	Corners.Add(FVector2D(Orgin.X + BoxExtent.X, Orgin.Y + BoxExtent.Y));

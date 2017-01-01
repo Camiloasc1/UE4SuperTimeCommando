@@ -103,10 +103,10 @@ void ULoSVisualizer::CalculateCorners(TArray<FVector2D>& OutCorners)
 
 	OutCorners.Empty();
 	TArray<AActor*> OverlappingActors;
-	Sphere->GetOverlappingActors(OverlappingActors, ULoSObstacle::StaticClass());
+	Sphere->GetOverlappingActors(OverlappingActors, ALoSObstacle::StaticClass());
 	for (const auto& Actor : OverlappingActors)
 	{
-		ULoSObstacle* Obstacle = Cast<ULoSObstacle>(Actor);
+		ALoSObstacle* Obstacle = Cast<ALoSObstacle>(Actor);
 		for (const auto& Corner : Obstacle->GetCorners())
 		{
 			FVector2D V = Corner - Location2D;

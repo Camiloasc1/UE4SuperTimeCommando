@@ -5,14 +5,13 @@
 #include "GameFramework/Actor.h"
 #include "LoSObstacle.generated.h"
 
-UCLASS(ClassGroup = (SuperTimeCommando), meta = (BlueprintSpawnableComponent))
-class SUPERTIMECOMMANDO_API ULoSObstacle : public USceneComponent
+UCLASS()
+class SUPERTIMECOMMANDO_API ALoSObstacle : public AActor
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
-	ULoSObstacle();
+	ALoSObstacle();
 
 public:
 	// Get the corners based on the actor's bounds
