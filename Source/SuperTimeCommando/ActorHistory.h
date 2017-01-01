@@ -25,13 +25,13 @@ struct FCheckpoint
 
 	FTransform Transform;
 
-	uint32 PatrolTarget;
+	int32 PatrolTarget;
 
 	FORCEINLINE FCheckpoint()
 	{
 	}
 
-	FCheckpoint(ECheckpointType CheckpointType, float Time, const FTransform& Transform, uint32 PatrolTarget)
+	FCheckpoint(ECheckpointType CheckpointType, float Time, const FTransform& Transform, int32 PatrolTarget)
 		: CheckpointType(CheckpointType),
 		  Time(Time),
 		  Transform(Transform),

@@ -2,6 +2,7 @@
 
 #include "SuperTimeCommando.h"
 #include "PushCheckpointBTService.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "EnemyAIController.h"
 #include "../ActorHistory.h"
 
@@ -19,7 +20,8 @@ void UPushCheckpointBTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
+	UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
 	AEnemyAIController* AIController = Cast<AEnemyAIController>(OwnerComp.GetAIOwner());
 
-	AIController->GetActorHistory()->PushCheckpoint();
+	AIController->GetActorHistory()->PushCheckpoint(Blackboard->GetValueAsInt("TargetIndex"));
 }
