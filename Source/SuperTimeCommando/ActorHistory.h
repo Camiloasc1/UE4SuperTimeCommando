@@ -93,7 +93,6 @@ protected:
 	void OnTimeEndBackward();
 
 private:
-	bool HasOwnerPawn() const;
 	APawn* GetOwnerPawn() const;
 };
 

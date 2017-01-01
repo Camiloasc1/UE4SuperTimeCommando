@@ -50,9 +50,10 @@ void UActorHistory::PushCheckpoint()
 
 void UActorHistory::Push(ECheckpointType CheckpointType)
 {
-	if (HasOwnerPawn())
+	APawn* OwnerPawn = GetOwnerPawn();
+	if (OwnerPawn != nullptr)
 	{
-		Checkpoints.Push(FCheckpoint(CheckpointType, GetWorld()->GetTimeSeconds(), GetOwnerPawn()->GetActorLocation()));
+		Checkpoints.Push(FCheckpoint(CheckpointType, GetWorld()->GetTimeSeconds(), OwnerPawn->GetActorLocation()));
 	}
 }
 
@@ -69,21 +70,12 @@ void UActorHistory::OnTimeEndBackward()
 	}
 }
 
-bool UActorHistory::HasOwnerPawn() const
-{
-	return GetOwnerPawn() != nullptr;
-}
-
 APawn* UActorHistory::GetOwnerPawn() const
 {
 	AActor* Owner = GetOwner();
-	if (Owner->IsA(APlayerController::StaticClass()))
+	if (Owner->IsA(AController::StaticClass()))
 	{
-		return Cast<APlayerController>(Owner)->GetPawn();
-	}
-	if (Owner->IsA(AAIController::StaticClass()))
-	{
-		return Cast<AAIController>(Owner)->GetPawn();
+		return Cast<AController>(Owner)->GetPawn();
 	}
 	return nullptr;
 }
