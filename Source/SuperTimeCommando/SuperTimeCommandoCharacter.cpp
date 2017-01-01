@@ -30,7 +30,7 @@ ASuperTimeCommandoCharacter::ASuperTimeCommandoCharacter()
 	CameraBoom->RelativeRotation = FRotator(-60.f, 0.f, 0.f);
 	CameraBoom->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
 
-										  // Create a camera...
+	// Create a camera...
 	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
@@ -53,7 +53,7 @@ ASuperTimeCommandoCharacter::ASuperTimeCommandoCharacter()
 
 void ASuperTimeCommandoCharacter::Tick(float DeltaSeconds)
 {
-    Super::Tick(DeltaSeconds);
+	Super::Tick(DeltaSeconds);
 
 	if (CursorToWorld != nullptr)
 	{
@@ -80,5 +80,13 @@ void ASuperTimeCommandoCharacter::Tick(float DeltaSeconds)
 			CursorToWorld->SetWorldLocation(TraceHitResult.Location);
 			CursorToWorld->SetWorldRotation(CursorR);
 		}
+	}
+}
+
+void ASuperTimeCommandoCharacter::AddHit()
+{
+	if(++HitCount >= 3)
+	{
+		//GameOver
 	}
 }
