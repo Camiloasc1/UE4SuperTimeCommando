@@ -6,14 +6,15 @@
 #include "SuperTimeCommandoGameState.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTimeBeginBackwardSignature);
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTimeEndBackwardSignature);
 
-UCLASS()
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameEndSignature, bool, bHasWin);
 
+UCLASS()
 class SUPERTIMECOMMANDO_API ASuperTimeCommandoGameState : public AGameStateBase
 {
 	GENERATED_BODY()
+
 public:
 	// Event called when the time starts to go back
 	UPROPERTY(BlueprintAssignable, Category = "Game State|Time")
@@ -21,6 +22,9 @@ public:
 	// Event called when the time ends to go back
 	UPROPERTY(BlueprintAssignable, Category = "Game State|Time")
 	FTimeEndBackwardSignature OnTimeEndBackward;
+	// Event called when the game ends
+	UPROPERTY(BlueprintAssignable, Category = "Game State|Time")
+	FOnGameEndSignature OnGameEnd;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Game State|Time")

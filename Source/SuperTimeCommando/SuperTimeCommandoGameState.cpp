@@ -30,10 +30,12 @@ void ASuperTimeCommandoGameState::SetTimeBackward(bool Value)
 
 void ASuperTimeCommandoGameState::Win()
 {
+	OnGameEnd.Broadcast(true);
 }
 
 void ASuperTimeCommandoGameState::Lose()
 {
+	OnGameEnd.Broadcast(false);
 }
 
 void ASuperTimeCommandoGameState::AddHit()
