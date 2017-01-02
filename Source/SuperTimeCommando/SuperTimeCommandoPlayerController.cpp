@@ -2,9 +2,11 @@
 
 #include "SuperTimeCommando.h"
 #include "SuperTimeCommandoPlayerController.h"
+#include "Runtime/Engine/Classes/Components/DecalComponent.h"
 #include "SuperTimeCommandoCharacter.h"
 #include "SuperTimeCommandoGameState.h"
 #include "ActorHistory.h"
+#include "Util/Util.h"
 
 ASuperTimeCommandoPlayerController::ASuperTimeCommandoPlayerController()
 {
@@ -22,6 +24,9 @@ void ASuperTimeCommandoPlayerController::BeginPlay()
 	GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
 	GameState->OnGameEnd.AddDynamic(this, &ASuperTimeCommandoPlayerController::OnGameEnd);
 
+	FocusOffset = 250;
+	AngleDelta = 5;
+
 	ActorHistory->PushSpawn();
 	bHasMoved = true;
 }
@@ -29,6 +34,11 @@ void ASuperTimeCommandoPlayerController::BeginPlay()
 void ASuperTimeCommandoPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
+
+	if (!bHasMoved)
+	{
+		Rotate(DeltaTime);
+	}
 
 	if (GameState->IsTimeBackward())
 	{
@@ -52,6 +62,10 @@ void ASuperTimeCommandoPlayerController::SetupInputComponent()
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
 
+	// Camera focus
+	InputComponent->BindAction("Focus", IE_Pressed, this, &ASuperTimeCommandoPlayerController::OnFocusPressed);
+	InputComponent->BindAction("Focus", IE_Released, this, &ASuperTimeCommandoPlayerController::OnFocusReleased);
+
 	// Movement
 	InputComponent->BindAxis("MoveForward", this, &ASuperTimeCommandoPlayerController::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &ASuperTimeCommandoPlayerController::MoveRight);
@@ -64,6 +78,18 @@ void ASuperTimeCommandoPlayerController::SetupInputComponent()
 void ASuperTimeCommandoPlayerController::OnGameEnd(bool bHasWin)
 {
 	DisableInput(this);
+}
+
+void ASuperTimeCommandoPlayerController::OnFocusPressed()
+{
+	ASuperTimeCommandoCharacter* PossessedPawn = Cast<ASuperTimeCommandoCharacter>(GetPawn());
+	PossessedPawn->GetCameraBoom()->SetRelativeLocation(FVector(FocusOffset, 0, 0));
+}
+
+void ASuperTimeCommandoPlayerController::OnFocusReleased()
+{
+	ASuperTimeCommandoCharacter* PossessedPawn = Cast<ASuperTimeCommandoCharacter>(GetPawn());
+	PossessedPawn->GetCameraBoom()->SetRelativeLocation(FVector(0, 0, 0));
 }
 
 void ASuperTimeCommandoPlayerController::OnReverseTimePressed()
@@ -107,5 +133,23 @@ void ASuperTimeCommandoPlayerController::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		GetPawn()->AddMovementInput(Direction, Value);
+	}
+}
+
+void ASuperTimeCommandoPlayerController::Rotate(float DeltaTime)
+{
+	ASuperTimeCommandoCharacter* PossessedPawn = Cast<ASuperTimeCommandoCharacter>(GetPawn());
+
+	FVector Forward = PossessedPawn->GetActorForwardVector() * -1;
+	FVector Target = PossessedPawn->GetActorLocation() - PossessedPawn->GetCursorToWorld()->GetComponentLocation();
+
+	float Angle = GUtil::SignedAngle2D(Forward, Target);
+	if (FMath::Abs(Angle) > AngleDelta)
+	{
+		FRotator Rotator = PossessedPawn->GetActorRotation();
+		Angle /= FMath::Abs(Angle);
+		Rotator.Yaw += Angle * DeltaTime * PossessedPawn->GetCharacterMovement()->RotationRate.Yaw;
+		PossessedPawn->SetActorRotation(Rotator);
+		bHasMoved = true;
 	}
 }
