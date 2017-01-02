@@ -131,5 +131,6 @@ void ASuperTimeCommandoPlayerController::Rotate(float DeltaTime)
 		Angle /= FMath::Abs(Angle);
 		Rotator.Yaw += Angle * DeltaTime * PossessedPawn->GetCharacterMovement()->RotationRate.Yaw;
 		PossessedPawn->SetActorRotation(Rotator);
+		bHasMoved = true;
 	}
 }
