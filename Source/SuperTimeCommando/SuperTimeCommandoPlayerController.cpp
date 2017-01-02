@@ -2,8 +2,6 @@
 
 #include "SuperTimeCommando.h"
 #include "SuperTimeCommandoPlayerController.h"
-#include "AI/Navigation/NavigationSystem.h"
-#include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "SuperTimeCommandoCharacter.h"
 #include "SuperTimeCommandoGameState.h"
 #include "ActorHistory.h"
