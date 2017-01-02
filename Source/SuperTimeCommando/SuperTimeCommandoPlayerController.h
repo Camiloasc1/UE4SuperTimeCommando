@@ -34,6 +34,9 @@ protected:
 	UFUNCTION()
 	void MoveRight(float Value);
 
+	UFUNCTION()
+	void Rotate(float DeltaTime);
+
 private:
 	class ASuperTimeCommandoGameState* GameState;
 	bool bHasMoved;

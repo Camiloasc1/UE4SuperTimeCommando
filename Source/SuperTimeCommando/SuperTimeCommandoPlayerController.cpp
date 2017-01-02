@@ -2,9 +2,11 @@
 
 #include "SuperTimeCommando.h"
 #include "SuperTimeCommandoPlayerController.h"
+#include "Runtime/Engine/Classes/Components/DecalComponent.h"
 #include "SuperTimeCommandoCharacter.h"
 #include "SuperTimeCommandoGameState.h"
 #include "ActorHistory.h"
+#include "Util/Util.h"
 
 ASuperTimeCommandoPlayerController::ASuperTimeCommandoPlayerController()
 {
@@ -29,6 +31,11 @@ void ASuperTimeCommandoPlayerController::BeginPlay()
 void ASuperTimeCommandoPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
+
+	if (!bHasMoved)
+	{
+		Rotate(DeltaTime);
+	}
 
 	if (GameState->IsTimeBackward())
 	{
@@ -107,5 +114,22 @@ void ASuperTimeCommandoPlayerController::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		GetPawn()->AddMovementInput(Direction, Value);
+	}
+}
+
+void ASuperTimeCommandoPlayerController::Rotate(float DeltaTime)
+{
+	ASuperTimeCommandoCharacter* PossessedPawn = Cast<ASuperTimeCommandoCharacter>(GetPawn());
+
+	FVector Forward = PossessedPawn->GetActorForwardVector() * -1;
+	FVector Target = PossessedPawn->GetActorLocation() - PossessedPawn->GetCursorToWorld()->GetComponentLocation();
+
+	float Angle = GUtil::SignedAngle2D(Forward, Target);
+	if (FMath::Abs(Angle) > 5)
+	{
+		FRotator Rotator = PossessedPawn->GetActorRotation();
+		Angle /= FMath::Abs(Angle);
+		Rotator.Yaw += Angle * DeltaTime * PossessedPawn->GetCharacterMovement()->RotationRate.Yaw;
+		PossessedPawn->SetActorRotation(Rotator);
 	}
 }
