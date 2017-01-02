@@ -4,6 +4,7 @@
 #include "Projectile.h"
 #include "ActorHistory.h"
 #include "SuperTimeCommandoCharacter.h"
+#include "LoS/LoSObstacle.h"
 
 
 // Sets default values
@@ -91,6 +92,10 @@ void AProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	if (OtherActor->IsA(ASuperTimeCommandoCharacter::StaticClass()))
 	{
 		Die(true);
+	}
+	if (OtherActor->IsA(ALoSObstacle::StaticClass()))
+	{
+		Die(false);
 	}
 }
 
