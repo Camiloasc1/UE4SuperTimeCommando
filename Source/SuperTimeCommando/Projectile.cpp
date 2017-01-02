@@ -24,6 +24,10 @@ void AProjectile::BeginPlay()
 	Super::BeginPlay();
 
 	Origin = GetActorLocation();
+
+	ASuperTimeCommandoGameState* GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
+	GameState->OnTimeBeginBackward.AddDynamic(this, &AProjectile::OnTimeBeginBackward);
+	GameState->OnTimeEndBackward.AddDynamic(this, &AProjectile::OnTimeEndBackward);
 }
 
 // Called every frame
@@ -87,6 +91,19 @@ void AProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	if (OtherActor->IsA(ASuperTimeCommandoCharacter::StaticClass()))
 	{
 		Die(true);
+	}
+}
+
+void AProjectile::OnTimeBeginBackward()
+{
+}
+
+void AProjectile::OnTimeEndBackward()
+{
+	if (DeathTime != 0)
+	{
+		float Delta = GetWorld()->GetTimeSeconds() - GetWorld()->GetGameState<ASuperTimeCommandoGameState>()->GetTimePivot();
+		DeathTime += 2 * Delta;
 	}
 }
 
