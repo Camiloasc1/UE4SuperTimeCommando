@@ -82,11 +82,3 @@ void ASuperTimeCommandoCharacter::Tick(float DeltaSeconds)
 		}
 	}
 }
-
-void ASuperTimeCommandoCharacter::AddHit()
-{
-	if(++HitCount >= 3)
-	{
-		//GameOver
-	}
-}

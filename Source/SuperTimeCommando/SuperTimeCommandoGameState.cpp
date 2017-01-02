@@ -27,3 +27,25 @@ void ASuperTimeCommandoGameState::SetTimeBackward(bool Value)
 		OnTimeEndBackward.Broadcast();
 	}
 }
+
+void ASuperTimeCommandoGameState::Win()
+{
+}
+
+void ASuperTimeCommandoGameState::Lose()
+{
+}
+
+void ASuperTimeCommandoGameState::AddHit()
+{
+	if (++HitCount >= 3)
+	{
+		Lose();
+	}
+}
+
+void ASuperTimeCommandoGameState::UndoHit()
+{
+	HitCount--;
+	UE_LOG(LogTemp, Warning, TEXT("UndoHit %d"), HitCount);
+}
