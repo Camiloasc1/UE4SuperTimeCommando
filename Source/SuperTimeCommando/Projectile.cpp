@@ -24,6 +24,10 @@ void AProjectile::BeginPlay()
 	Super::BeginPlay();
 
 	Origin = GetActorLocation();
+
+	ASuperTimeCommandoGameState* GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
+	GameState->OnTimeBeginBackward.AddDynamic(this, &AProjectile::OnTimeBeginBackward);
+	GameState->OnTimeEndBackward.AddDynamic(this, &AProjectile::OnTimeEndBackward);
 }
 
 // Called every frame
@@ -42,7 +46,11 @@ void AProjectile::Tick(float DeltaTime)
 		float PivotTime = GameState->GetTimePivot();
 		if (CurrentTime - PivotTime >= PivotTime - DeathTime || DeathTime == 0)
 		{
-			Respawn();
+			// Respawn if is necessary
+			if (DeathTime != 0)
+			{
+				Respawn();
+			}
 			// Go back
 			FVector ToOrigin = Origin - GetActorLocation();
 			if (ToOrigin.Size() > 1)
@@ -52,13 +60,13 @@ void AProjectile::Tick(float DeltaTime)
 			else
 			{
 				// Destroy
-				Die();
-				SetLifeSpan(0);
+				Die(false);
+				SetLifeSpan(DELTA);
 				SetActorTickEnabled(false);
 			}
 		}
 	}
-	else
+	else if (DeathTime == 0)
 	{
 		// Go forward
 		FVector ToTarget = Target - GetActorLocation();
@@ -66,30 +74,59 @@ void AProjectile::Tick(float DeltaTime)
 		{
 			AddActorWorldOffset(ToTarget.GetSafeNormal() * Speed * DeltaTime);
 		}
-		else if (DeathTime == 0)
+		else
 		{
-			Die();
+			Die(false);
 		}
 	}
 }
 
 void AProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (GetWorld()->GetGameState<ASuperTimeCommandoGameState>()->IsTimeBackward())
+	{
+		return;
+	}
+
 	if (OtherActor->IsA(ASuperTimeCommandoCharacter::StaticClass()))
 	{
-		Cast<ASuperTimeCommandoCharacter>(OtherActor)->AddHit();
-		Die();
+		Die(true);
+	}
+}
+
+void AProjectile::OnTimeBeginBackward()
+{
+}
+
+void AProjectile::OnTimeEndBackward()
+{
+	if (DeathTime != 0)
+	{
+		float Delta = GetWorld()->GetTimeSeconds() - GetWorld()->GetGameState<ASuperTimeCommandoGameState>()->GetTimePivot();
+		DeathTime += 2 * Delta;
 	}
 }
 
 void AProjectile::Respawn()
 {
+	if (WasHit)
+	{
+		ASuperTimeCommandoGameState* GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
+		GameState->UndoHit();
+	}
+	WasHit = false;
 	DeathTime = 0;
 	SetActorHiddenInGame(false);
 }
 
-void AProjectile::Die()
+void AProjectile::Die(bool IsHit)
 {
-	SetActorHiddenInGame(true);
+	if (IsHit)
+	{
+		ASuperTimeCommandoGameState* GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
+		GameState->AddHit();
+	}
+	WasHit = IsHit;
 	DeathTime = GetWorld()->GetTimeSeconds();
+	SetActorHiddenInGame(true);
 }

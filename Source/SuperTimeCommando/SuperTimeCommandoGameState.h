@@ -8,6 +8,8 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTimeBeginBackwardSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTimeEndBackwardSignature);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameEndSignature, bool, bHasWin);
+
 UCLASS()
 class SUPERTIMECOMMANDO_API ASuperTimeCommandoGameState : public AGameStateBase
 {
@@ -20,17 +22,35 @@ public:
 	// Event called when the time ends to go back
 	UPROPERTY(BlueprintAssignable, Category = "Game State|Time")
 	FTimeEndBackwardSignature OnTimeEndBackward;
+	// Event called when the game ends
+	UPROPERTY(BlueprintAssignable, Category = "Game State|Time")
+	FOnGameEndSignature OnGameEnd;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Game State|Time")
 	bool IsTimeBackward() const;
 	UFUNCTION(BlueprintCallable, Category = "Game State|Time")
 	void SetTimeBackward(bool BIsTimeBackward);
-
 	UFUNCTION(BlueprintCallable, Category = "Game State|Time")
 	FORCEINLINE float GetTimePivot() const
 	{
 		return TimePivot;
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "Game State|State")
+	void Win();
+	UFUNCTION(BlueprintCallable, Category = "Game State|State")
+	void Lose();
+
+	UFUNCTION(BlueprintCallable, Category = "Game State|Player Health")
+	void AddHit();
+	UFUNCTION(BlueprintCallable, Category = "Game State|Player Health")
+	void UndoHit();
+
+	UFUNCTION(BlueprintCallable, Category = "Game State|Player Health")
+	FORCEINLINE float GetHealt() const
+	{
+		return 1 - HitCount / 3.;
 	}
 
 private:
@@ -38,4 +58,6 @@ private:
 	bool bIsTimeBackward;
 	// When the time started to go back
 	float TimePivot;
+	// The hit count
+	uint8 HitCount;
 };

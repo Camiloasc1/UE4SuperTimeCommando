@@ -34,11 +34,16 @@ public:
 public:
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnTimeBeginBackward();
+	UFUNCTION()
+	void OnTimeEndBackward();
 
 private:
 	void Respawn();
-	void Die();
+	void Die(bool WasHit);
 
 private:
 	float DeathTime;
+	bool WasHit;
 };

@@ -62,7 +62,7 @@ void UActorHistory::OnTimeEndBackward()
 	float Delta = GetWorld()->GetTimeSeconds() - GetWorld()->GetGameState<ASuperTimeCommandoGameState>()->GetTimePivot();
 	for (auto& Checkpoint : Checkpoints)
 	{
-		Checkpoint.Time += Delta;
+		Checkpoint.Time += 2 * Delta;
 	}
 }
 
