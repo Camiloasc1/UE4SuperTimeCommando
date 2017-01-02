@@ -42,7 +42,11 @@ void AProjectile::Tick(float DeltaTime)
 		float PivotTime = GameState->GetTimePivot();
 		if (CurrentTime - PivotTime >= PivotTime - DeathTime || DeathTime == 0)
 		{
-			Respawn();
+			// Respawn if is necessary
+			if (DeathTime != 0)
+			{
+				Respawn();
+			}
 			// Go back
 			FVector ToOrigin = Origin - GetActorLocation();
 			if (ToOrigin.Size() > 1)
