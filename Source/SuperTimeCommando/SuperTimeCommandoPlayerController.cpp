@@ -22,6 +22,7 @@ void ASuperTimeCommandoPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
+	GameState->OnGameEnd.AddDynamic(this, &ASuperTimeCommandoPlayerController::OnGameEnd);
 
 	ActorHistory->PushSpawn();
 	bHasMoved = true;
@@ -60,6 +61,11 @@ void ASuperTimeCommandoPlayerController::SetupInputComponent()
 	// Time rewind
 	InputComponent->BindAction("ReverseTime", IE_Pressed, this, &ASuperTimeCommandoPlayerController::OnReverseTimePressed);
 	InputComponent->BindAction("ReverseTime", IE_Released, this, &ASuperTimeCommandoPlayerController::OnReverseTimeReleased);
+}
+
+void ASuperTimeCommandoPlayerController::OnGameEnd(bool bHasWin)
+{
+	DisableInput(this);
 }
 
 void ASuperTimeCommandoPlayerController::OnReverseTimePressed()

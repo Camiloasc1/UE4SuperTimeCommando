@@ -21,10 +21,17 @@ protected:
 	virtual void PlayerTick(float DeltaTime) override;
 	virtual void SetupInputComponent() override;
 
+	UFUNCTION()
+	void OnGameEnd(bool bHasWin);
+
+	UFUNCTION()
 	void OnReverseTimePressed();
+	UFUNCTION()
 	void OnReverseTimeReleased();
 
+	UFUNCTION()
 	void MoveForward(float Value);
+	UFUNCTION()
 	void MoveRight(float Value);
 
 private:
