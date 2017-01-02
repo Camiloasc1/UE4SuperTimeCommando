@@ -91,6 +91,8 @@ protected:
 	// Shot a projectile to the target position
 	virtual void Shot(FVector Target);
 
+	bool HasClearSightOfPoint(FVector& Target) const;
+
 private:
 	LoSVisualizerState State;
 	float LastShot;

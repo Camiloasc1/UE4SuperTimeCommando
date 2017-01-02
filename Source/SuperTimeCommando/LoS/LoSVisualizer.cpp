@@ -129,7 +129,7 @@ void ULoSVisualizer::CalculateCorners(TArray<FVector2D>& OutCorners)
 			return GUtil::Angle2D(Forward2D, A) <= FoV;
 		});
 
-	// Add a small tolerance arround the corners
+	// Add a small delta arround the corners
 	int32 Count = OutCorners.Num();
 	for (int32 i = 0; i < Count; ++i)
 	{
@@ -141,7 +141,7 @@ void ULoSVisualizer::CalculateCorners(TArray<FVector2D>& OutCorners)
 	OutCorners.Add(Forward2D.GetRotated(FoV) * MaxDistance);
 	OutCorners.Add(Forward2D.GetRotated(-FoV) * MaxDistance);
 
-	// Add detail steps
+	// Add the detail steps
 	float angle = -FoV;
 	for (int8 i = 0; i < Segments; ++i)
 	{
@@ -208,37 +208,13 @@ void ULoSVisualizer::UpdateProceduralMesh()
 
 void ULoSVisualizer::TryShot()
 {
-	FVector Forward = GetOwner()->GetActorForwardVector();
-	FVector2D Forward2D = FVector2D(Forward.X, Forward.Y);
-	FVector Location = GetOwner()->GetActorLocation();
-	FVector2D Location2D = FVector2D(Location.X, Location.Y);
-
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASuperTimeCommandoCharacter::StaticClass(), FoundActors);
 	for (const auto& Actor : FoundActors)
 	{
 		FVector Target = Actor->GetActorLocation();
-		FVector2D Target2D = FVector2D(Target.X, Target.Y);
 
-		// Is near?
-		FVector2D ToPlayer = Target2D - Location2D;
-		if (ToPlayer.Size() > MaxDistance)
-		{
-			SetState(Normal);
-			continue;
-		}
-
-		// Is in the field of view?
-		if (GUtil::Angle2D(Forward2D, ToPlayer) > FoV)
-		{
-			SetState(Normal);
-			continue;
-		}
-
-		// Can see the player?
-		FHitResult HitResult(ForceInit);
-		FCollisionQueryParams CollisionQueryParams = FCollisionQueryParams();
-		if (GetWorld()->LineTraceSingleByChannel(HitResult, Location, Target, ECC_Visibility, CollisionQueryParams))
+		if (!HasClearSightOfPoint(Target))
 		{
 			SetState(Normal);
 			continue;
@@ -251,19 +227,55 @@ void ULoSVisualizer::TryShot()
 			LastShot = GetWorld()->GetTimeSeconds();
 		}
 
+		// Wait the cooldown
 		if (LastShot + Cooldown > GetWorld()->GetTimeSeconds())
 		{
-			return;
+			continue;
 		}
+
 		Shot(Target);
 	}
 }
 
 void ULoSVisualizer::Shot(FVector Target)
 {
-	UWorld* World = GetWorld();
-	AProjectile* CreatedProjectile = World->SpawnActor<AProjectile>(Projectile, GetOwner()->GetActorLocation(), FRotator(0, 0, 0), FActorSpawnParameters());
+	// Shot in the Target direction
+	Target -= GetOwner()->GetActorLocation();
+	Target.Normalize();
+	Target *= MaxDistance;
+	Target += GetOwner()->GetActorLocation();
+
+	AProjectile* CreatedProjectile = GetWorld()->SpawnActor<AProjectile>(Projectile, GetOwner()->GetActorLocation(), FRotator(0, 0, 0), FActorSpawnParameters());
 	CreatedProjectile->Target = Target;
 	SetState(Danger);
 	LastShot = GetWorld()->GetTimeSeconds();
+}
+
+
+bool ULoSVisualizer::HasClearSightOfPoint(FVector& Target) const
+{
+	FVector Forward = GetOwner()->GetActorForwardVector();
+	FVector Location = GetOwner()->GetActorLocation();
+	FVector ToTarget = Target - Location;
+
+	// Is near?
+	if (ToTarget.Size() > MaxDistance)
+	{
+		return false;
+	}
+
+	// Is in the field of view?
+	if (GUtil::Angle2D(Forward, ToTarget) > FoV)
+	{
+		return false;
+	}
+
+	// Can see the player?
+	FHitResult HitResult(ForceInit);
+	FCollisionQueryParams CollisionQueryParams = FCollisionQueryParams();
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Location, Target, ECC_Visibility, CollisionQueryParams))
+	{
+		return false;
+	}
+	return true;
 }
