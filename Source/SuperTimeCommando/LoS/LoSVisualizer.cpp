@@ -44,15 +44,15 @@ void ULoSVisualizer::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	UpdateProceduralMesh();
 
+	// Fix the rotation error
+	SetRelativeRotation(FRotator(0, -GetOwner()->GetActorRotation().Yaw, 0));
+
 	if (GetWorld()->GetGameState<ASuperTimeCommandoGameState>()->IsTimeBackward())
 	{
 		SetState(Warning);
 	}
 	else
 	{
-		// Fix the rotation error
-		SetRelativeRotation(FRotator(0, -GetOwner()->GetActorRotation().Yaw, 0));
-
 		// Check if player in range and shot
 		TryShot();
 	}
