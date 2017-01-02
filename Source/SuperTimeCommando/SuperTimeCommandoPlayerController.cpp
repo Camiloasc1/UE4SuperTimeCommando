@@ -24,6 +24,9 @@ void ASuperTimeCommandoPlayerController::BeginPlay()
 	GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
 	GameState->OnGameEnd.AddDynamic(this, &ASuperTimeCommandoPlayerController::OnGameEnd);
 
+	FocusOffset = 250;
+	AngleDelta = 5;
+
 	ActorHistory->PushSpawn();
 	bHasMoved = true;
 }
@@ -59,6 +62,10 @@ void ASuperTimeCommandoPlayerController::SetupInputComponent()
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
 
+	// Camera focus
+	InputComponent->BindAction("Focus", IE_Pressed, this, &ASuperTimeCommandoPlayerController::OnFocusPressed);
+	InputComponent->BindAction("Focus", IE_Released, this, &ASuperTimeCommandoPlayerController::OnFocusReleased);
+
 	// Movement
 	InputComponent->BindAxis("MoveForward", this, &ASuperTimeCommandoPlayerController::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &ASuperTimeCommandoPlayerController::MoveRight);
@@ -71,6 +78,18 @@ void ASuperTimeCommandoPlayerController::SetupInputComponent()
 void ASuperTimeCommandoPlayerController::OnGameEnd(bool bHasWin)
 {
 	DisableInput(this);
+}
+
+void ASuperTimeCommandoPlayerController::OnFocusPressed()
+{
+	ASuperTimeCommandoCharacter* PossessedPawn = Cast<ASuperTimeCommandoCharacter>(GetPawn());
+	PossessedPawn->GetCameraBoom()->SetRelativeLocation(FVector(FocusOffset, 0, 0));
+}
+
+void ASuperTimeCommandoPlayerController::OnFocusReleased()
+{
+	ASuperTimeCommandoCharacter* PossessedPawn = Cast<ASuperTimeCommandoCharacter>(GetPawn());
+	PossessedPawn->GetCameraBoom()->SetRelativeLocation(FVector(0, 0, 0));
 }
 
 void ASuperTimeCommandoPlayerController::OnReverseTimePressed()
@@ -125,7 +144,7 @@ void ASuperTimeCommandoPlayerController::Rotate(float DeltaTime)
 	FVector Target = PossessedPawn->GetActorLocation() - PossessedPawn->GetCursorToWorld()->GetComponentLocation();
 
 	float Angle = GUtil::SignedAngle2D(Forward, Target);
-	if (FMath::Abs(Angle) > 5)
+	if (FMath::Abs(Angle) > AngleDelta)
 	{
 		FRotator Rotator = PossessedPawn->GetActorRotation();
 		Angle /= FMath::Abs(Angle);

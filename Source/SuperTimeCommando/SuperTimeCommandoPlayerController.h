@@ -13,6 +13,12 @@ public:
 	class UActorHistory* ActorHistory;
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera")
+	float FocusOffset;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera")
+	float AngleDelta;
+
+public:
 	ASuperTimeCommandoPlayerController();
 
 	void BeginPlay() override;
@@ -23,6 +29,11 @@ protected:
 
 	UFUNCTION()
 	void OnGameEnd(bool bHasWin);
+
+	UFUNCTION()
+	void OnFocusPressed();
+	UFUNCTION()
+	void OnFocusReleased();
 
 	UFUNCTION()
 	void OnReverseTimePressed();
