@@ -37,8 +37,9 @@ public:
 
 private:
 	void Respawn();
-	void Die();
+	void Die(bool WasHit);
 
 private:
 	float DeathTime;
+	bool WasHit;
 };
