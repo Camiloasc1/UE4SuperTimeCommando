@@ -3,6 +3,7 @@
 #include "SuperTimeCommando.h"
 #include "Target.h"
 #include "SuperTimeCommandoGameState.h"
+#include "SuperTimeCommandoCharacter.h"
 
 
 // Sets default values
@@ -33,6 +34,9 @@ void ATarget::Tick( float DeltaTime )
 
 void ATarget::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	ASuperTimeCommandoGameState* GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
-	GameState->Win();
+	if (OtherActor->IsA(ASuperTimeCommandoCharacter::StaticClass()))
+	{
+		ASuperTimeCommandoGameState* GameState = GetWorld()->GetGameState<ASuperTimeCommandoGameState>();
+		GameState->Win();
+	}
 }
