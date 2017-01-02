@@ -105,10 +105,8 @@ void ULoSVisualizer::UpdateSphereRadius()
 
 void ULoSVisualizer::CalculateCorners(TArray<FVector2D>& OutCorners)
 {
-	FVector Forward = GetOwner()->GetActorForwardVector();
-	FVector2D Forward2D = FVector2D(Forward.X, Forward.Y);
-	FVector Location = GetOwner()->GetActorLocation();
-	FVector2D Location2D = FVector2D(Location.X, Location.Y);
+	FVector2D Forward2D = FVector2D(GetOwner()->GetActorForwardVector());
+	FVector2D Location2D = FVector2D(GetOwner()->GetActorLocation());
 
 	OutCorners.Empty();
 	TArray<AActor*> OverlappingActors;
@@ -167,12 +165,10 @@ void ULoSVisualizer::UpdateProceduralMesh()
 	Vertices.Add(FVector(0, 0, 0));
 	for (const auto& Corner : Corners)
 	{
-		FVector V = FVector(Corner.X, Corner.Y, 0).GetClampedToMaxSize2D(MaxDistance);
+		FVector V = FVector(Corner, 0).GetClampedToMaxSize2D(MaxDistance);
 
 		FHitResult HitResult(ForceInit);
-
 		FCollisionQueryParams CollisionQueryParams = FCollisionQueryParams();
-
 		if (GetWorld()->LineTraceSingleByChannel(HitResult, Location, Location + V, ECC_Visibility, CollisionQueryParams))
 		{
 			Vertices.Add(HitResult.ImpactPoint - Location);
